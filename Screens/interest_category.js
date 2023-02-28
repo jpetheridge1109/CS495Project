@@ -10,9 +10,8 @@ import {
   Image
 } from 'react-native';
 
-import {Stack, Surface} from "@react-native-material/core";
-import {SearchBar} from "react-native-elements";
-import { Avatar, Divider } from '@rneui/themed';
+import { Surface } from "@react-native-material/core";;
+import { Divider } from '@rneui/themed';
 
 const DATA = [
   {
@@ -41,35 +40,32 @@ const DATA = [
   }
 ];
 
-const Item = ({item}) => (
-    <TouchableOpacity>
-      <Surface
-        elevation={20}
-        category="medium"
-        style={{ alignSelf: 'center', width: '90%', aspectRatio: 5, marginBottom: 20, borderRadius: 10}}
-      >
-        <View style={{flex: 1, flexDirection: "row"}}>
-          <View style={{flex: 1}}>
-            <Image
-                source= {item.img} style={styles.avatars}/>
-                <Text style={styles.memberCount}>{item.numMembers} members</Text>
-          </View>
-          <Divider orientation = 'vertical' width = '2'/>
-          <View style={{flex: 3}}>
-            <Text style={styles.groupNameText}>{item.name}</Text>
-            <Text style = {styles.description}>{item.description}</Text>
-          </View>
-
-
-        </View>
-      </Surface>
-    </TouchableOpacity>
-
-);
-
-
 export default class Interest_category extends React.Component{
   render (){
+
+    const Item = ({item}) => (
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Interest_Home_Page')}>
+          <Surface
+              elevation={20}
+              category="medium"
+              style={{ alignSelf: 'center', width: '90%', aspectRatio: 5, marginBottom: 20, borderRadius: 10}}
+          >
+            <View style={{flex: 1, flexDirection: "row"}}>
+              <View style={{flex: 1}}>
+                <Image
+                    source= {item.img} style={styles.avatars}/>
+                <Text style={styles.memberCount}>{item.numMembers} members</Text>
+              </View>
+              <Divider orientation = 'vertical' width = '2'/>
+              <View style={{flex: 3}}>
+                <Text style={styles.groupNameText}>{item.name}</Text>
+                <Text style = {styles.description}>{item.description}</Text>
+              </View>
+            </View>
+          </Surface>
+        </TouchableOpacity>
+    );
+
     return(
          <SafeAreaView style={styles.container}>
            <Text style={styles.categories}>Groups</Text>

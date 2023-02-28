@@ -128,7 +128,7 @@ export default class Interest_search extends React.Component{
   render (){
     const { search } = this.state;
     const Item = ({item}) => (
-        <TouchableOpacity style={[styles.item,{backgroundColor: item.color}]} onPress={() => this.props.navigation.navigate('Profile')}>
+        <TouchableOpacity style={[styles.item,{backgroundColor: item.color}]} onPress={() => this.props.navigation.navigate('Specific_Interests')}>
           <Text style={styles.text}>{item.name}</Text>
           <Image
               source= {item.img} style = {styles.image}/>
