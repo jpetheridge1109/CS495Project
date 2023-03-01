@@ -15,32 +15,31 @@ export default function App() {
           Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible)
         }}>
-        <View style = {styles.centered}>
-          <View style = {styles.modalView}>
-          <Text style = {styles.modalText}>Event Name</Text>
-            <View style = {{flexDirection: 'row', marginBottom: 20}}>
-              <Text style = {styles.modalLeftText}>Date of Event</Text>
-              <Text style = {styles.modalRightText}>Place of Event</Text>
-
-            </View>
-            <View style = {{flexDirection: 'row', marginBotom: 20}}>
-              <Text style = {styles.modalLeftText}>Time of Event</Text>
-              <Text style = {styles.modalRightText}>Event Organizer</Text>
-            </View>
-            <View style = {{flexDirection: 'row', marginBottom: 20}}>
-              <Pressable style = {[styles.button, styles.buttonRSVP]}>
-                <Text style = {styles.textStyle}>RSVP</Text>
+        <View style = {styles.modalWrapper}>
+            <View style = {styles.modalView}>
+            <Text style = {styles.modalText}>Event Name</Text>
+              <View style = {{flexDirection: 'row', marginBottom: 20}}>
+                <Text style = {styles.modalLeftText}>Date of Event</Text>
+                <Text style = {styles.modalRightText}>Place of Event</Text>
+              </View>
+              <View style = {{flexDirection: 'row', marginBotom: 20}}>
+                <Text style = {styles.modalLeftText}>Time of Event</Text>
+                <Text style = {styles.modalRightText}>Event Organizer</Text>
+              </View>
+              <View style = {{flexDirection: 'row', marginBottom: 20}}>
+                <Pressable style = {[styles.button, styles.buttonRSVP]}>
+                  <Text style = {styles.textStyle}>RSVP</Text>
+                </Pressable>
+                <Pressable style = {[styles.button, styles.buttonViewPpl]}>
+                  <Text style = {styles.textStyle}>View People Attending</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                style = {[styles.button, styles.buttonClose]}
+                onPress = {() => setModalVisible(!modalVisible)}>
+                <Text style = {styles.textStyle}>Hide This Modal</Text>
               </Pressable>
-              <Pressable style = {[styles.button, styles.buttonViewPpl]}>
-                <Text style = {styles.textStyle}>View People Attending</Text>
-              </Pressable>
             </View>
-            <Pressable
-              style = {[styles.button, styles.buttonClose]}
-              onPress = {() => setModalVisible(!modalVisible)}>
-              <Text style = {styles.textStyle}>Hide This Modal</Text>
-            </Pressable>
-          </View>
         </View>
       </Modal>
       <Pressable
@@ -66,13 +65,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
   },
+  modalWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   modalView: {
     verticalAlign: 'center',
-    margin: 20,
+    margin: 0,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 0,
     padding: 35,
-    //alignItems: 'center',
+    alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {
