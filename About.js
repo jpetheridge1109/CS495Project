@@ -1,9 +1,14 @@
 // About.js
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function About() {
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>About</Text>
@@ -11,7 +16,19 @@ export default function About() {
         <Text style={styles.sectionHeader}>Personal Information</Text>
         <Text style={styles.attribute}>Name: John Doe</Text>
         <Text style={styles.attribute}>Email: john.doe@example.com</Text>
-        <Text style={styles.attribute}>Password: ********</Text>
+        <View style={styles.passwordContainer}>
+          <Text style={styles.passwordLabel}>Password:</Text>
+          <TouchableOpacity
+            style={styles.passwordToggleButton}
+            onPress={togglePasswordVisibility}>
+            <Text style={styles.passwordToggleLabel}>
+              {showPassword ? 'Hide' : 'Show'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.attribute}>
+          {showPassword ? 'password123' : '********'}
+        </Text>
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>App Information</Text>
@@ -45,5 +62,23 @@ const styles = StyleSheet.create({
   attribute: {
     fontSize: 24,
     marginBottom: 10,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  passwordLabel: {
+    fontSize: 24,
+    marginRight: 10,
+  },
+  passwordToggleButton: {
+    backgroundColor: 'grey',
+    borderRadius: 5,
+    padding: 5,
+  },
+  passwordToggleLabel: {
+    fontSize: 18,
+    color: 'white',
   },
 });

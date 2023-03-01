@@ -9,15 +9,15 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SettingsPanel">
-        <Stack.Screen name="SettingsPanel" component={SettingsPanel} />
+      <Stack.Navigator initialRouteName="Settings">
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="About" component={About} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-function SettingsPanel({ navigation }) {
+function Settings({ navigation }) {
   const handleAboutPress = () => {
     navigation.navigate('About');
   };
