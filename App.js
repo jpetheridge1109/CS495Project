@@ -4,6 +4,7 @@ import Interest_category from "./Screens/interest_category";
 import Interest_page from "./Screens/interest_page";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Member_list from "./Screens/member_list";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,10 @@ export default class App extends React.Component{
             <Stack.Screen
                 name="Interest_Home_Page"
                 component={Interest_page}
+                options = {{ headerTransparent: true, headerTitleStyle: { color: '#344e71'}}} />
+            <Stack.Screen
+                name="Members_Page"
+                component={Member_list}
                 options = {{ headerTransparent: true, headerTitleStyle: { color: '#344e71'}}} />
           </Stack.Navigator>
         </NavigationContainer>

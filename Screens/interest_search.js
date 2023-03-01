@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: '40%',
     color: '#343333',
+    fontWeight:'bold'
   },
   image:{
     width: '50%',
