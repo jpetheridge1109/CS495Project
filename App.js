@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import About from './About';
+import Notifications from './Notifications';
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Settings">
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="About" component={About} />
+        <Stack.Screen name="Notifications" component={Notifications} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -23,7 +25,7 @@ function Settings({ navigation }) {
   };
 
   const handleNotificationsPress = () => {
-    console.log('Notifications button pressed');
+    navigation.navigate('Notifications');
   };
 
   const handleBlockedContactsPress = () => {
