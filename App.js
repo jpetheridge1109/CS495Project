@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import About from './About';
@@ -31,7 +31,7 @@ function Settings({ navigation }) {
   };
 
   const handleContactUsPress = () => {
-    console.log('Contact Us button pressed');
+    Linking.openURL('https://docs.google.com/forms/d/e/1FAIpQLScE462nOMYWvQZr8jyaXPhSEbOcJi4iOv3-sLpL27F_lL21eg/viewform?usp=sf_link');
   };
 
   const handleLogOutPress = () => {
