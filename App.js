@@ -3,17 +3,21 @@ import { StyleSheet, Text, View, Pressable, Modal, Alert } from 'react-native';
 import React, {useState} from 'react';
 
 export default function App() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [eventModalVisible, setEventModalVisible] = useState(false);
+  const [RSVPModalVisible, setRSVPModalVisible] = useState(false);
+  const [ViewPPlModalVisible, setViewPplModalVisible] = useState(false);
   return (
     <View style={styles.container}>
-      <Text>Jajajaja!</Text>
       <Modal
         animationType = "fade"
         transparent = {true}
-        visible = {modalVisible}
+        visible = {eventModalVisible}
+        onModalHide = {() => {
+          console.debug('hello');
+        }}
         onRequestClose = {() => {
           Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible)
+          setEventModalVisible(!eventModalVisible)
         }}>
         <View style = {styles.modalWrapper}>
             <View style = {styles.modalView}>
@@ -27,24 +31,75 @@ export default function App() {
                 <Text style = {styles.modalRightText}>Event Organizer</Text>
               </View>
               <View style = {{flexDirection: 'row', marginBottom: 20}}>
-                <Pressable style = {[styles.button, styles.buttonRSVP]}>
+                <Pressable style = {[styles.button, styles.buttonRSVP]}
+                  onPress = {
+                    () => {setEventModalVisible(!eventModalVisible); setRSVPModalVisible(true)}
+                  }>
                   <Text style = {styles.textStyle}>RSVP</Text>
                 </Pressable>
-                <Pressable style = {[styles.button, styles.buttonViewPpl]}>
+                <Pressable style = {[styles.button, styles.buttonViewPpl]}
+                  onPress = {
+                    () => {setViewPplModalVisible(true); setEventModalVisible(!eventModalVisible)}
+                  }>
                   <Text style = {styles.textStyle}>View People Attending</Text>
                 </Pressable>
               </View>
               <Pressable
                 style = {[styles.button, styles.buttonClose]}
-                onPress = {() => setModalVisible(!modalVisible)}>
+                onPress = {() => setEventModalVisible(!eventModalVisible)}>
                 <Text style = {styles.textStyle}>Hide This Modal</Text>
               </Pressable>
             </View>
         </View>
       </Modal>
+      <Modal
+        animationType = "fade"
+        transparent = {true}
+        visible = {RSVPModalVisible}
+        onRequestClose = {() => {
+          Alert.alert('Modal has been closed.');
+          setRSVPModalVisible(!RSVPModalVisible)
+        }}>
+        <View style = {styles.modalWrapper}>
+          <Text style = {styles.textStyle}>Would you like to RSVP for this event?</Text>
+          <View style = {{flexDirection: 'row', marginBottom: 20}}>
+            <Pressable style = {[styles.button, styles.buttonYes]}
+              onPress = {
+                () => {setRSVPModalVisible(!RSVPModalVisible); setEventModalVisible(!eventModalVisible)}
+                //ADD FUNCTION TO CONFIRM RSVP FOR ACCOUNT TO THIS EVENT
+              }>
+            <Text style = {styles.textStyle}>Confirm RSVP</Text>
+            </Pressable>
+            <Pressable style = {[styles.button, styles.buttonCancel]}
+              onPress = {
+                () => {setRSVPModalVisible(!RSVPModalVisible); setEventModalVisible(!eventModalVisible)}
+              }>
+              <Text style = {styles.textStyle}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>  
+      </Modal>
+      <Modal
+        animationType = "fade"
+        transparent = {true}
+        visible = {ViewPPlModalVisible}
+        onRequestClose = {() => {
+          Alert.alert('Modal has been closed.');
+          setRSVPModalVisible(!ViewPPlModalVisible)
+        }}>
+        <View style = {styles.modalWrapper}>
+          <Text style = {styles.textStyle}>Below is a list of people</Text>
+          <Pressable style = {[styles.button, styles.buttonCancel]}
+            onPress = {
+              () => {setViewPplModalVisible(!ViewPPlModalVisible); setEventModalVisible(!eventModalVisible)}
+            }>
+          <Text style = {styles.textStyle}>Close People RSVP'ed</Text>
+          </Pressable>
+        </View>  
+      </Modal>
       <Pressable
         style = {[styles.button, styles.buttonOpen]}
-        onPress = {() => setModalVisible(true)}>
+        onPress = {() => setEventModalVisible(true)}>
         <Text style = {styles.textStyle}>This would be an event to click on</Text>
       </Pressable>  
       <StatusBar style="auto" />
@@ -97,6 +152,12 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: '#2196F3',
+  },
+  buttonYes: {
+    backgroundColor: "#1eb76a",
+  },
+  buttonCancel: {
+    backgroundColor: "#b51f30",
   },
   buttonRSVP: {
     backgroundColor: '#DA8E12',
