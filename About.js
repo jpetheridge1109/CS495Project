@@ -1,12 +1,25 @@
 // Displays the "About" screen within the Settings Page
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { WebView } from 'react-native-webview'
 
 export default function About() {
   const [showPassword, setShowPassword] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleTermsAndConditionsPress = () => {
+    <WebView
+      style={{flex: 1, marginTop: 20}}
+      originWhitelist={['*']}
+      source={'./termsAndConditions.html'}
+      javaScriptEnabled={true}
+      domStorageEnabled={true}
+    />
+    //Linking.openURL('./termsAndConditions.html');
   };
   
   return (
@@ -32,8 +45,10 @@ export default function About() {
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>App Information</Text>
-        <Text style={styles.attribute}>OS Version: iOS 15.2</Text>
-        <Text style={styles.attribute}>Terms and Conditions: Accept</Text>
+        <Text style={styles.attribute}>OS Version: 1.0</Text>
+        <TouchableOpacity onPress={handleTermsAndConditionsPress}>
+          <Text style={[styles.attribute, styles.underline]}>Terms and Conditions</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -80,5 +95,8 @@ const styles = StyleSheet.create({
   passwordToggleLabel: {
     fontSize: 18,
     color: 'white',
+  },
+  underline: {
+    textDecorationLine: 'underline',
   },
 });
