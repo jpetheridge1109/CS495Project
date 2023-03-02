@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import About from './About';
 import Notifications from './Notifications';
+import BlockedContacts from './BlockedContacts';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ export default function App() {
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="About" component={About} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="Blocked Contacts" component={BlockedContacts} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -33,7 +35,7 @@ function Settings({ navigation }) {
   };
 
   const handleBlockedContactsPress = () => {
-    console.log('Blocked Contacts button pressed');
+    navigation.navigate('Blocked Contacts');
   };
 
   const handleContactUsPress = () => {
