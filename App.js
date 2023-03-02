@@ -1,3 +1,5 @@
+// Displays the main Settings page
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';

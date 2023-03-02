@@ -1,4 +1,4 @@
-// About.js
+// Displays the "About" screen within the Settings Page
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
