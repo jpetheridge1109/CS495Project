@@ -1,7 +1,7 @@
 // Displays the main Settings page
 
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import About from './About';
@@ -22,6 +22,8 @@ export default function App() {
 }
 
 function Settings({ navigation }) {
+  const [isLogOutConfirmationVisible, setIsLogOutConfirmationVisible] = useState(false);
+
   const handleAboutPress = () => {
     navigation.navigate('About');
   };
@@ -39,7 +41,14 @@ function Settings({ navigation }) {
   };
 
   const handleLogOutPress = () => {
-    console.log('Log Out button pressed');
+    setIsLogOutConfirmationVisible(true);
+  };
+
+  const handleLogOutConfirmation = (confirmed) => {
+    setIsLogOutConfirmationVisible(false);
+    if (confirmed) {
+      console.log('Logging out...');
+    }
   };
 
   return (
@@ -67,6 +76,21 @@ function Settings({ navigation }) {
           <TouchableOpacity style={styles.button} onPress={handleLogOutPress}>
             <Text style={styles.buttonText}>Log Out</Text>
           </TouchableOpacity>
+          {isLogOutConfirmationVisible && (
+          <View style={styles.modal}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Are you sure you want to log out?</Text>
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity style={[styles.modalButton, styles.modalConfirmButton]} onPress={() => handleLogOutConfirmation(true)}>
+                  <Text style={styles.modalButtonText}>Yes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.modalCancelButton]} onPress={() => handleLogOutConfirmation(false)}>
+                  <Text style={styles.modalButtonText}>No</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          )}
         </View>
       </View>
     </View>
@@ -85,6 +109,30 @@ const styles = StyleSheet.create({
   subSection: {
     flex: 1,
     justifyContent: 'center',
+  },
+  modalButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalCancelButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  modalCancelButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
   sectionTitle: {
     fontSize: 32,
