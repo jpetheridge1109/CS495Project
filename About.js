@@ -7,24 +7,23 @@ import { WebView } from 'react-native-webview'
 export default function About() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleTermsAndConditionsPress = () => {
-    <WebView
-      style={{flex: 1, marginTop: 20}}
-      originWhitelist={['*']}
-      source={'./termsAndConditions.html'}
-      javaScriptEnabled={true}
-      domStorageEnabled={true}
-    />
-    //Linking.openURL('./termsAndConditions.html');
+    setShowTermsAndConditions(!showTermsAndConditions);
+  };
+
+  const handlePrivacyPolicyPress = () => {
+    setShowPrivacyPolicy(!showPrivacyPolicy);
   };
   
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>About</Text>
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>Personal Information</Text>
         <Text style={styles.attribute}>Name: John Doe</Text>
@@ -47,9 +46,30 @@ export default function About() {
         <Text style={styles.sectionHeader}>App Information</Text>
         <Text style={styles.attribute}>OS Version: 1.0</Text>
         <TouchableOpacity onPress={handleTermsAndConditionsPress}>
-          <Text style={[styles.attribute, styles.underline]}>Terms and Conditions</Text>
+          <Text style={[styles.attribute, styles.underline]}>{showTermsAndConditions ? 'Hide Terms and Conditions' : 'Show Terms and Conditions'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePrivacyPolicyPress}>
+          <Text style={[styles.attribute, styles.underline]}>{showPrivacyPolicy ? 'Hide Privacy Policy' : 'Show Privacy Policy'}</Text>
         </TouchableOpacity>
       </View>
+      {showTermsAndConditions && (
+        <WebView
+          style={{ flex: 1, marginTop: 20 }}
+          originWhitelist={['*']}
+          source={require('./termsAndConditions.html')}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+        />
+      )}
+      {showPrivacyPolicy && (
+        <WebView
+          style={{ flex: 1, marginTop: 20 }}
+          originWhitelist={['*']}
+          source={require('./privacy.html')}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+        />
+      )}
     </View>
   );
 }

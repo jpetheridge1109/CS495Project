@@ -30,7 +30,6 @@ export default function BlockedContacts() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Blocked Contacts</Text>
       {blockedContacts.map((name, index) => (
         <View key={index} style={styles.row}>
           <Text style={styles.name}>{name}</Text>
