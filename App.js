@@ -16,20 +16,20 @@ export default class App extends React.Component{
             <Stack.Screen
                 name="Interest_Categories"
                 component={Interest_Search}
-                options = {{ headerShown: false, headerTransparent: true}}
+                options = {{ headerTransparent: true, headerTitle:''}}
             />
             <Stack.Screen
                 name="Specific_Interests"
                 component={Interest_category}
-                options = {{ headerTransparent: true, headerTitleStyle: { color: '#344e71'}}} />
+                options = {{ headerTransparent: true, headerBackTitleVisible:false, headerTitle:''}} />
             <Stack.Screen
                 name="Interest_Home_Page"
                 component={Interest_page}
-                options = {{ headerTransparent: true, headerTitleStyle: { color: '#344e71'}}} />
+                options = {{ headerTransparent: true, headerBackTitleVisible:false, headerTitle:''}} />
             <Stack.Screen
                 name="Members_Page"
                 component={Member_list}
-                options = {{ headerTransparent: true, headerTitleStyle: { color: '#344e71'}}} />
+                options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
           </Stack.Navigator>
         </NavigationContainer>
     );

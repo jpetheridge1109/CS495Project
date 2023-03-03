@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import { Surface } from "@react-native-material/core";;
-import { Divider } from '@rneui/themed';
+import {RFPercentage} from "react-native-responsive-fontsize";
 
 const DATA = [
   {
@@ -38,7 +38,7 @@ export default class Member_list extends React.Component{
           <Surface
               elevation={20}
               category="medium"
-              style={{ alignSelf: 'center', width: '80%', aspectRatio: 8, marginBottom: 20, borderRadius: 10}}
+              style={{ alignSelf: 'center', width: '80%', aspectRatio: 4, marginBottom: 20, borderRadius: 10}}
           >
             <View style={{flex: 1, flexDirection: "row"}}>
               <View style={{flex: 1, justifyContent:'center'}}>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   categories:{
     paddingTop: 20,
     textAlign: 'center',
-    fontSize: 40,
+    fontSize: RFPercentage(5),
     color: '#e9dfdf',
     paddingBottom:20
   },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     paddingTop: '2%',
     pattingBottom: '2%',
     textAlign: 'center',
-    fontSize: '40%',
+    //fontSize: '40%',
     color: '#343333',
   },
   image:{
@@ -111,20 +111,20 @@ const styles = StyleSheet.create({
     marginTop: '5%'
   },
   groupNameText:{
-    alignSelf: 'left',
-    fontSize: '30%',
+    textAlign: 'left',
+    fontSize: RFPercentage(3),
     fontWeight:'bold'
   },
   memberCount: {
-    alignSelf:'center',
+    textAlign:'center',
     paddingTop: '2%',
-    fontSize:'20%',
+    //fontSize:'20%',
     color: '#999191',
     fontWeight:'bold'
   },
   description:{
     paddingLeft:'2%',
-    fontSize: '20%',
-    color: '#999191',
+    //fontSize: '20%',
+    color: '#999191'
   }
 });

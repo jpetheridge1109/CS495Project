@@ -12,6 +12,7 @@ import {
 
 import { Surface } from "@react-native-material/core";;
 import { Divider } from '@rneui/themed';
+import {RFPercentage} from "react-native-responsive-fontsize";
 
 const DATA = [
   {
@@ -48,15 +49,15 @@ export default class Interest_category extends React.Component{
           <Surface
               elevation={20}
               category="medium"
-              style={{ alignSelf: 'center', width: '90%', aspectRatio: 5, marginBottom: 20, borderRadius: 10}}
+              style={{ alignSelf: 'center', width: '90%', aspectRatio: 2, marginBottom: 20, borderRadius: 10}}
           >
             <View style={{flex: 1, flexDirection: "row"}}>
-              <View style={{flex: 1}}>
+              <View style={{flex: 1, justifyContent: 'center'}}>
                 <Image
                     source= {item.img} style={styles.avatars}/>
                 <Text style={styles.memberCount}>{item.numMembers} members</Text>
               </View>
-              <Divider orientation = 'vertical' width = '2'/>
+              <Divider orientation = 'vertical' width = {2}/>
               <View style={{flex: 3}}>
                 <Text style={styles.groupNameText}>{item.name}</Text>
                 <Text style = {styles.description}>{item.description}</Text>
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   categories:{
     paddingTop: 20,
     textAlign: 'center',
-    fontSize: 40,
+    fontSize: RFPercentage(5),
     color: '#e9dfdf',
     paddingBottom:20
   },
@@ -105,7 +106,6 @@ const styles = StyleSheet.create({
     paddingTop: '2%',
     pattingBottom: '2%',
     textAlign: 'center',
-    fontSize: '40%',
     color: '#343333',
   },
   image:{
@@ -117,26 +117,27 @@ const styles = StyleSheet.create({
   avatars:{
     alignSelf: 'center',
     justifySelf: 'center',
-    height: '75%',
+    height: '45%',
     aspectRatio:1,
     borderRadius: 10000,
     marginTop: '5%'
   },
   groupNameText:{
     alignSelf: 'center',
-    fontSize: '40%',
+    fontSize: RFPercentage(3),
     fontWeight:'bold'
   },
   memberCount: {
     alignSelf:'center',
     paddingTop: '2%',
-    fontSize:'20%',
+    fontSize: RFPercentage(2),
     color: '#999191',
     fontWeight:'bold'
   },
   description:{
     paddingLeft:'2%',
-    fontSize: '20%',
+    paddingRight:'2%',
+    fontSize: RFPercentage(2),
     color: '#999191',
   }
 });

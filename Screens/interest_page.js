@@ -10,8 +10,10 @@ import {
 
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
+import { RFPercentage } from "react-native-responsive-fontsize";
 
-export default class Interest_page extends React.Component{
+
+export default class Test extends React.Component{
   render (){
     return(
         <SafeAreaView style={styles.container}>
@@ -19,7 +21,7 @@ export default class Interest_page extends React.Component{
             <Surface
                 elevation={20}
                 category="medium"
-                style={{ alignSelf: 'center', width: '70%', aspectRatio: 1.5, marginBottom: 20, borderRadius: 10}}
+                style={{ alignSelf: 'center', width: '80%', aspectRatio: 1, marginBottom: 20, borderRadius: 10}}
             >
               <Image
                   source = {require('../assets/bike.png')}
@@ -32,27 +34,15 @@ export default class Interest_page extends React.Component{
             <Surface
                 elevation={20}
                 category="medium"
-                style={{ alignSelf: 'center', width: '90%', aspectRatio: 6, marginBottom: 20, borderRadius: 10}}
+                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
             >
-              <Text style = {{paddingLeft:'3%', paddingBottom:'1%', fontSize:'15%',fontWeight:'bold'}}>Members: 32</Text>
+              <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: 32</Text>
               <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
                 <View style = {{flex:1}}>
                   <TouchableOpacity style = {styles.memberTouchable}>
                     <Image source = {require('../assets/casey.png')} style = {styles.avatars}/>
                   </TouchableOpacity>
                   <Text style = {styles.memberName}>Casey</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable}>
-                    <Image source = {require('../assets/sandra.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>Sandra</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable}>
-                    <Image source = {require('../assets/Philip.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>Philip</Text>
                 </View>
                 <View style = {{flex:1}}>
                   <TouchableOpacity style = {styles.memberTouchable}>
@@ -78,9 +68,9 @@ export default class Interest_page extends React.Component{
             <Surface
                 elevation={20}
                 category="medium"
-                style={{ alignSelf: 'center', width: '90%', aspectRatio: 4, marginBottom: 20, borderRadius: 10}}
+                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
             >
-              <Text style={{    textAlign: 'center', fontSize: '20%', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold'}}>Upcoming Events</Text>
+              <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
               <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
                 <TouchableOpacity style = {{flex:1}}>
                   <Surface
@@ -89,9 +79,7 @@ export default class Interest_page extends React.Component{
                       style={styles.eventTile}
                   >
                     <Text style = {styles.eventName}>MTB At Sokol Park</Text>
-                    <Text style = {styles.eventDetails}>When: 3/10/2023 at 3:00pm </Text>
-                    <Text style = {styles.eventDetails}>Location: Sokol Park</Text>
-                    <Text style = {styles.eventDetails}>10 Members going</Text>
+                    <Text style = {styles.eventDetails}>3/10/2023 at 3:00pm </Text>
                   </Surface>
                 </TouchableOpacity>
                 <TouchableOpacity style = {{flex:1}}>
@@ -101,21 +89,7 @@ export default class Interest_page extends React.Component{
                       style={styles.eventTile}
                   >
                     <Text style = {styles.eventName}>Group Lunch</Text>
-                    <Text style = {styles.eventDetails}>When: 3/11/2023 at 12:00pm </Text>
-                    <Text style = {styles.eventDetails}>Location: Ferguson Center</Text>
-                    <Text style = {styles.eventDetails}>5 Members going</Text>
-                  </Surface>
-                </TouchableOpacity>
-                <TouchableOpacity style = {{flex:1}}>
-                  <Surface
-                      elevation={6}
-                      category={"medium"}
-                      style={styles.eventTile}
-                  >
-                    <Text style = {styles.eventName}>MTB At Oak Mountain</Text>
-                    <Text style = {styles.eventDetails}>When: 3/15/2023 at 3:00pm </Text>
-                    <Text style = {styles.eventDetails}>Location: Oak Mountain State Park</Text>
-                    <Text style = {styles.eventDetails}>5 Members going</Text>
+                    <Text style = {styles.eventDetails}>3/11/2023 at 12:00pm </Text>
                   </Surface>
                 </TouchableOpacity>
               </View>
@@ -129,12 +103,10 @@ export default class Interest_page extends React.Component{
                   alignSelf:'center',
                   justifySelf: 'center'
                 }}>Join</Button>
-                <Text style = {{textAlign:'center', fontWeight:'bold', fontSize:'20%', color:'white', paddingTop:'2%'}}>Join to see chat</Text>
+                <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
               </ImageBackground>
             </View>
-
           </ScrollView>
-
         </SafeAreaView>
     );
   }
@@ -143,7 +115,7 @@ export default class Interest_page extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
+    paddingTop: StatusBar.currentHeight + 10,
     backgroundColor: '#344e71'
   },
   item: {
@@ -172,26 +144,26 @@ const styles = StyleSheet.create({
     paddingTop: '2%',
     pattingBottom: '2%',
     textAlign: 'center',
-    fontSize: '40%',
     color: '#343333',
-    fontWeight:'bold'
+    fontWeight:'bold',
+    fontSize: RFPercentage(3)
   },
   description:{
     paddingTop:'2%',
     paddingLeft:'2%',
     paddingRight:'2%',
-    fontSize: '18%',
+    fontSize: RFPercentage(2),
     color: '#999191',
   },
   groupDetails:{
     textAlign: 'center',
-    fontSize: '18%',
+    fontSize: RFPercentage(2),
     fontWeight:'bold'
   },
   memberName:{
     textAlign: 'center',
-    fontSize: '18%',
-    paddingTop: '2%',
+    fontSize: RFPercentage(2),
+    paddingTop: '8%',
     fontWeight:'bold'
   },
   memberTouchable:{
@@ -208,12 +180,12 @@ const styles = StyleSheet.create({
   eventDetails:{
     paddingLeft: '5%',
     paddingBottom:'3%',
-    fontSize:'15%'
+    fontSize: RFPercentage(2)
   },
   eventName:{
     textAlign:'center',
     fontWeight:'bold',
     paddingBottom:'2%',
-    fontSize:'18%'
-}
+    fontSize: RFPercentage(2)
+  }
 });

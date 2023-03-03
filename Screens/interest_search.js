@@ -1,16 +1,14 @@
 import React from 'react';
 import {
   SafeAreaView,
-  View,
   FlatList,
   StyleSheet,
   Text,
   StatusBar,
   TouchableOpacity,
   Image,
-    Button
 } from 'react-native';
-import {SearchBar} from 'react-native-elements';
+import {RFPercentage} from "react-native-responsive-fontsize";
 
 const DATA = [
   {
@@ -137,14 +135,6 @@ export default class Interest_search extends React.Component{
     return(
         <SafeAreaView style={styles.container}>
           <Text style={styles.categories} >Categories</Text>
-          <SearchBar
-              containerStyle={{backgroundColor: 'white', borderRadius: 30, marginHorizontal:'5%'}}
-              placeholder="Type Here..."
-              onChangeText={this.updateSearch}
-              value={search}
-              lightTheme = 'true'
-              style = {styles.search}
-          />
           <FlatList
               columnWrapperStyle={{justifyContent: 'space-evenly'}}
               data={DATA}
@@ -160,7 +150,7 @@ export default class Interest_search extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
+    paddingTop: StatusBar.currentHeight + 10 || 0,
     backgroundColor: '#344e71'
   },
   item: {
@@ -174,7 +164,7 @@ const styles = StyleSheet.create({
   categories:{
     paddingTop: 20,
     textAlign: 'center',
-    fontSize: 40,
+    fontSize: RFPercentage(5),
     color: '#e9dfdf',
     paddingBottom:20
   },
@@ -182,7 +172,7 @@ const styles = StyleSheet.create({
     paddingTop: '2%',
     pattingBottom: '2%',
     textAlign: 'center',
-    fontSize: '40%',
+    fontSize: RFPercentage(3),
     color: '#343333',
     fontWeight:'bold'
   },
