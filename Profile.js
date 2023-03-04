@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity} from 'reac
 -Add settings button to top bar
 -Fix shadows
 */
-export default function App() {
+export default function Profile() {
   return (
     <View style={styles.container}>
 
