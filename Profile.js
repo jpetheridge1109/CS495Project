@@ -9,9 +9,12 @@ export default function Profile() {
   return (
     <View style={styles.container}>
 
+    {/* Gonna keep the Commonality header off for now, the header is gonna be a Group List implemented next sprint */}
+    {/*  
       <View style={styles.topBar}>
         <Text style={styles.topBarFont}>Commonality</Text>
       </View>
+    */}
 
       <ScrollView>
         <Image source={require('./assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>

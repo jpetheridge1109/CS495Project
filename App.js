@@ -3,6 +3,7 @@ import { Button, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Event  from './Event.js'
+import Profile from './Profile.js'
 
 function HomeScreen({ navigation }) {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <Drawer.Screen name="Home" component={HomeScreen} />
         <Drawer.Screen name="Notifications" component={NotificationsScreen} />
         <Drawer.Screen name="Event" component={Event} />
+        <Drawer.Screen name="Profile" component={Profile} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
