@@ -2,7 +2,6 @@ import React from 'react';
 import Interest_Search from './Screens/interest_search'
 import Interest_category from "./Screens/interest_category";
 import Interest_page from "./Screens/interest_page";
-import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Member_list from "./Screens/member_list";
 
@@ -11,7 +10,6 @@ const Stack = createNativeStackNavigator();
 export default class GroupFind extends React.Component{
   render (){
     return(
-        <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
                 name="Interest_Categories"
@@ -31,7 +29,6 @@ export default class GroupFind extends React.Component{
                 component={Member_list}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
           </Stack.Navigator>
-        </NavigationContainer>
     );
   }
 }

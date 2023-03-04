@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import Event  from './Event.js'
 import Profile from './Profile.js'
+import GroupFind from './GroupFind.js'
 
 function HomeScreen({ navigation }) {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Drawer.Screen name="Notifications" component={NotificationsScreen} />
         <Drawer.Screen name="Event" component={Event} />
         <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="GroupFind" component={GroupFind} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
