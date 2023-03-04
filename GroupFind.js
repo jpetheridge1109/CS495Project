@@ -8,7 +8,7 @@ import Member_list from "./Screens/member_list";
 
 const Stack = createNativeStackNavigator();
 
-export default class App extends React.Component{
+export default class GroupFind extends React.Component{
   render (){
     return(
         <NavigationContainer>
