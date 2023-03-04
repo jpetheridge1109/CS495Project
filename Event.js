@@ -7,15 +7,18 @@ import RSVPList from './RSVPList';
 
 const Stack = createStackNavigator();
 
-export default function App() {
-  return(
+export default function Event() {
+  /*return(
     <NavigationContainer>
       <Stack.Navigator initialRouteName = "Start">
         <Stack.Screen name = "Start" component = {Start}/>
         <Stack.Screen name = "RSVP List" component = {RSVPList}/>
       </Stack.Navigator>
     </NavigationContainer>
-  );
+  ); 
+  */
+
+  return(<Start></Start>)
 }
 function Start({navigation}){
   const [eventModalVisible, setEventModalVisible] = useState(false);
