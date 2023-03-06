@@ -10,9 +10,10 @@ import {
   Image
 } from 'react-native';
 
-import { Surface } from "@react-native-material/core";;
+import { Surface } from "@react-native-material/core";
 import { Divider } from '@rneui/themed';
 import {RFPercentage} from "react-native-responsive-fontsize";
+
 
 const DATA = [
   {

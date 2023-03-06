@@ -72,7 +72,7 @@ export default class Test extends React.Component{
             >
               <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
               <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                <TouchableOpacity style = {{flex:1}}>
+                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
                   <Surface
                       elevation={6}
                       category={"medium"}
@@ -82,7 +82,7 @@ export default class Test extends React.Component{
                     <Text style = {styles.eventDetails}>3/10/2023 at 3:00pm </Text>
                   </Surface>
                 </TouchableOpacity>
-                <TouchableOpacity style = {{flex:1}}>
+                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
                   <Surface
                       elevation={6}
                       category={"medium"}

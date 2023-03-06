@@ -13,8 +13,8 @@ export default function App() {
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Find A Group">
       <Drawer.Screen name="Find a Group" component={GroupFind} />
-        <Drawer.Screen name="Event" component={Event} />
         <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="Event" component={Event} />
         <Drawer.Screen name="Preferences" component={SettingsHomepage} />
       </Drawer.Navigator>
     </NavigationContainer>

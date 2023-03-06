@@ -13,7 +13,7 @@ export default function Event() {
         <Stack.Screen name = "Start" component = {Start}/>
         <Stack.Screen name = "RSVP List" component = {RSVPList}/>
       </Stack.Navigator>
-  ); 
+  );
 }
 function Start({navigation}){
   const [eventModalVisible, setEventModalVisible] = useState(false);
@@ -24,31 +24,31 @@ function Start({navigation}){
   };
 
   const createTwoButtonAlert = () =>
-    Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
-      {
-        text: 'Yes',
-        //onPress: () => confirmRSVP
-      },
-      {
-        text: 'No',
-        //onPress: () => doSomething
-        style: 'cancel',
-      },
-    ]);
+      Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
+        {
+          text: 'Yes',
+          //onPress: () => confirmRSVP
+        },
+        {
+          text: 'No',
+          //onPress: () => doSomething
+          style: 'cancel',
+        },
+      ]);
 
   return (
-    <View style={styles.container}>
-      <Modal
-        animationType = "fade"
-        transparent = {true}
-        visible = {eventModalVisible}
-        onRequestClose = {() => {
-          Alert.alert('Modal has been closed.');
-          setEventModalVisible(!eventModalVisible)
-        }}>
-        <View style = {styles.modalWrapper}>
+      <View style={styles.container}>
+        <Modal
+            animationType = "fade"
+            transparent = {true}
+            visible = {eventModalVisible}
+            onRequestClose = {() => {
+              Alert.alert('Modal has been closed.');
+              setEventModalVisible(!eventModalVisible)
+            }}>
+          <View style = {styles.modalWrapper}>
             <View style = {styles.modalView}>
-            <Text style = {styles.modalText}>Event Name</Text>
+              <Text style = {styles.modalText}>Event Name</Text>
               <View style = {{flexDirection: 'row', marginBottom: 20}}>
                 <Text style = {styles.modalLeftText}>Date of Event</Text>
                 <Text style = {styles.modalRightText}>Place of Event</Text>
@@ -59,29 +59,29 @@ function Start({navigation}){
               </View>
               <View style = {{flexDirection: 'row', marginBottom: 20}}>
                 <Pressable style = {[styles.button, styles.buttonRSVP]}
-                  onPress = {createTwoButtonAlert}>
+                           onPress = {createTwoButtonAlert}>
                   <Text style = {styles.textStyle}>RSVP</Text>
                 </Pressable>
                 <Pressable style = {[styles.button, styles.buttonViewPpl]}
-                  onPress = {handleRSVPListPress}>
+                           onPress = {handleRSVPListPress}>
                   <Text style = {styles.textStyle}>View People Attending</Text>
                 </Pressable>
               </View>
               <Pressable
-                style = {[styles.button, styles.buttonClose]}
-                onPress = {() => setEventModalVisible(!eventModalVisible)}>
+                  style = {[styles.button, styles.buttonClose]}
+                  onPress = {() => setEventModalVisible(!eventModalVisible)}>
                 <Text style = {styles.textStyle}>Hide This Modal</Text>
               </Pressable>
             </View>
-        </View>
-      </Modal>
-      <Pressable
-        style = {[styles.button, styles.buttonOpen]}
-        onPress = {() => setEventModalVisible(true)}>
-        <Text style = {styles.textStyle}>This would be an event to click on</Text>
-      </Pressable>  
-      <StatusBar style="auto" />
-    </View>
+          </View>
+        </Modal>
+        <Pressable
+            style = {[styles.button, styles.buttonOpen]}
+            onPress = {() => setEventModalVisible(true)}>
+          <Text style = {styles.textStyle}>This would be an event to click on</Text>
+        </Pressable>
+        <StatusBar style="auto" />
+      </View>
   );
 }
 const styles = StyleSheet.create({
