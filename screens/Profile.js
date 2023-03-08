@@ -17,7 +17,7 @@ export default function Profile() {
     */}
 
       <ScrollView>
-        <Image source={require('./assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
+        <Image source={require('../assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
 
         <View style={styles.infoBackground}>
           <Text style={styles.nameFont}>Jacob Pearson</Text>
@@ -25,7 +25,7 @@ export default function Profile() {
           <Text style={styles.bodyFont}>Grade: Junior</Text>
           <Text style={styles.bodyFontBottom}>Major: Computer Science</Text>
           <TouchableOpacity style={styles.dmBox}>
-            <Image source={require('./assets/mail-icon.png')} style={styles.dmPic}></Image>
+            <Image source={require('../assets/mail-icon.png')} style={styles.dmPic}></Image>
             <Text style={styles.dmFont}>Direct Message</Text>
           </TouchableOpacity>
         </View>
@@ -39,22 +39,22 @@ export default function Profile() {
           <Text style={styles.nameFont}>Interests:</Text>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/bike.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Mountain Biking</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/musical-note.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Music</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/camera.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Photography</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/game-console.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Video Games</Text>
           </TouchableOpacity>
 

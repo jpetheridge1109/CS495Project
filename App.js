@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import Event  from './Event.js'
-import Profile from './Profile.js'
+import Event  from './modals/Event.js'
+import Profile from './screens/Profile.js'
 import GroupFind from './GroupFind.js'
-import SettingsHomepage from './SettingsHomepage.js'
+import SettingsHomepage from './screens/SettingsHomepage.js'
 
 const Drawer = createDrawerNavigator();
 

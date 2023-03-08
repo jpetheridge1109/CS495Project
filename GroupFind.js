@@ -1,11 +1,11 @@
 import React from 'react';
-import Interest_Search from './Screens/interest_search'
-import Interest_category from "./Screens/interest_category";
-import Interest_page from "./Screens/interest_page";
+import Interest_Search from './screens/interest_search'
+import Interest_category from "./screens/interest_category";
+import Interest_page from "./screens/interest_page";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Member_list from "./Screens/member_list";
-import RSVPList from "./RSVPList";
-import Start from "./Event";
+import Member_list from "./screens/member_list";
+import RSVPList from "./screens/RSVPList";
+import Start from "./modals/Event";
 
 const Stack = createNativeStackNavigator();
 

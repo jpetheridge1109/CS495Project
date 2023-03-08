@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable, Modal, Alert } from 'react-native';
 import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import RSVPList from './RSVPList';
+import RSVPList from '../screens/RSVPList';
 
 const Stack = createStackNavigator();
 

@@ -56,7 +56,7 @@ export default function About() {
         <WebView
           style={{ flex: 1, marginTop: 20 }}
           originWhitelist={['*']}
-          source={require('./termsAndConditions.html')}
+          source={require('../external/termsAndConditions.html')}
           javaScriptEnabled={true}
           domStorageEnabled={true}
         />
@@ -65,7 +65,7 @@ export default function About() {
         <WebView
           style={{ flex: 1, marginTop: 20 }}
           originWhitelist={['*']}
-          source={require('./privacy.html')}
+          source={require('../external/privacy.html')}
           javaScriptEnabled={true}
           domStorageEnabled={true}
         />
