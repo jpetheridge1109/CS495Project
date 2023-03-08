@@ -115,7 +115,7 @@ const updateSearch = (search) => {
   this.setState({ search });
 };
 
-export default class Interest_search extends React.Component{
+export default class InterestSearch extends React.Component{
   state = {
     search: '',
   };

@@ -1,9 +1,9 @@
 import React from 'react';
-import Interest_Search from './screens/interest_search'
-import Interest_category from "./screens/interest_category";
-import Interest_page from "./screens/interest_page";
+import Interest_Search from './screens/InterestSearch'
+import InterestCategory from "./screens/InterestCategory";
+import Interest_page from "./screens/InterestHomePage";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Member_list from "./screens/member_list";
+import MemberList from "./screens/MemberList";
 import RSVPList from "./screens/RSVPList";
 import Start from "./modals/Event";
 
@@ -20,7 +20,7 @@ export default class GroupFind extends React.Component{
             />
             <Stack.Screen
                 name="Specific_Interests"
-                component={Interest_category}
+                component={InterestCategory}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false, headerTitle:''}} />
             <Stack.Screen
                 name="Interest_Home_Page"
@@ -28,7 +28,7 @@ export default class GroupFind extends React.Component{
                 options = {{ headerTransparent: true, headerBackTitleVisible:false, headerTitle:''}} />
             <Stack.Screen
                 name="Members_Page"
-                component={Member_list}
+                component={MemberList}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
             <Stack.Screen name = "Start" component = {Start}/>
             <Stack.Screen name = "RSVP List" component = {RSVPList}/>

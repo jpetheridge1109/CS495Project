@@ -31,7 +31,7 @@ const DATA = [
   }
 ];
 
-export default class Member_list extends React.Component{
+export default class MemberList extends React.Component{
   render (){
     const Item = ({item}) => (
         <TouchableOpacity>
