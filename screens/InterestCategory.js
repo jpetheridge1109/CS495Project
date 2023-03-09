@@ -72,7 +72,6 @@ export default class InterestCategory extends React.Component{
       });
       const json = await response.json();
       DATA = json.documents;
-      console.log(DATA);
     } catch (error) {
       console.log(error);
     } finally {
@@ -81,7 +80,9 @@ export default class InterestCategory extends React.Component{
   }
 
   componentDidMount() {
-    this.getCategory("Sports");
+    const {categoryName} = this.props.route.params
+    console.log(categoryName);
+    this.getCategory(categoryName);
   }
 
   render (){
