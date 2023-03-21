@@ -1,21 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import Event  from './modals/Event.js'
+import Profile from './screens/Profile.js'
+import GroupFind from './GroupFind.js'
+import SettingsHomepage from './screens/SettingsHomepage.js'
+
+const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Text>Jajajaja!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Drawer.Navigator initialRouteName="Find A Group">
+      <Drawer.Screen name="Find a Group" component={GroupFind} />
+        <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="Event" component={Event} />
+        <Drawer.Screen name="Preferences" component={SettingsHomepage} />
+      </Drawer.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
