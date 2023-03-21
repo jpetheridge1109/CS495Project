@@ -12,8 +12,59 @@ import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
-
+let json;
+let image = "";
+let groupName = "";
+let createdDate = "";
+let description = "";
 export default class Test extends React.Component{
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      data: [],
+      isLoading: true,
+    };
+  }
+  async getGroup(id) {
+    try {
+      const response = await fetch('https://us-east-2.aws.data.mongodb-api.com/app/data-upeqz/endpoint/data/v1/action/findOne',{
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'Access-Control-Request-Headers': '*',
+          'api-key': 'ujz8gEvjLM3N0sxoWZ40g8S9rvmNxsGAutAbFrNv3ZIJA8Fje7rYsRzyWMLPcQUn',
+          Accept: 'application/json',
+          'User-Agent': 'PostmanRuntime/7.31.1',
+          Host: 'us-east-2.aws.data.mongodb-api.com',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Connection: 'keep-alive',
+        },
+        body: JSON.stringify({
+          dataSource: "CS495",
+          database: "db",
+          collection: "group",
+          filter: {"_id": {"$oid":id}}
+        }),
+      });
+      json = await response.json();
+      image = json.document.img;
+      groupName = json.document.name;
+      description = json.document.description
+      createdDate = json.document.created_date
+      //console.log(json.document.img)
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({isLoading: false});
+    }
+  }
+
+  componentDidMount() {
+    const {groupId} = this.props.route.params
+    console.log(groupId);
+    this.getGroup(groupId);
+  }
   render (){
     return(
         <SafeAreaView style={styles.container}>
@@ -24,11 +75,11 @@ export default class Test extends React.Component{
                 style={{ alignSelf: 'center', width: '80%', aspectRatio: 1, marginBottom: 20, borderRadius: 10}}
             >
               <Image
-                  source = {require('../assets/bike.png')}
+                  source = {{uri:image}}
                   style = {styles.groupPic}/>
-              <Text style = {styles.text}>Mountain Biking</Text>
-              <Text style = {styles.groupDetails}>Created March 18, 2020</Text>
-              <Text style = {styles.description}>We organize group rides for mountain and gravel biking in Tuscaloosa. We typically meet at Sokol Park on the weekends. All skill levels are welcome!</Text>
+              <Text style = {styles.text}>{groupName}</Text>
+              <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+              <Text style = {styles.description}>{description}</Text>
             </Surface>
 
             <Surface

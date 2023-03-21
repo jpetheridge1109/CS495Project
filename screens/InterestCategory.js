@@ -87,7 +87,7 @@ export default class InterestCategory extends React.Component{
 
   render (){
     const Item = ({item}) => (
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Interest_Home_Page')}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Interest_Home_Page',{groupId:item._id})}>
           <Surface
               elevation={20}
               category="medium"
