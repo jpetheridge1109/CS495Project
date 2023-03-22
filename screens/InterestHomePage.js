@@ -5,18 +5,28 @@ import {
   StyleSheet,
   Text,
   StatusBar,
-  TouchableOpacity, Image, ScrollView, ImageBackground
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ImageBackground,
+  ActivityIndicator,
+  FlatList
 } from 'react-native';
 
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
+import { findOne } from '../db.js'
 
-let json;
-let image = "";
+let image = "placeholder";
 let groupName = "";
 let createdDate = "";
 let description = "";
+let memberCount = 0;
+let memberIDs = [];
+let memberNames = [];
+let memberImages = [];
+let GROUPID;
 export default class Test extends React.Component{
   constructor(props) {
     super(props);
@@ -26,140 +36,148 @@ export default class Test extends React.Component{
       isLoading: true,
     };
   }
-  async getGroup(id) {
-    try {
-      const response = await fetch('https://us-east-2.aws.data.mongodb-api.com/app/data-upeqz/endpoint/data/v1/action/findOne',{
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',
-          'Access-Control-Request-Headers': '*',
-          'api-key': 'ujz8gEvjLM3N0sxoWZ40g8S9rvmNxsGAutAbFrNv3ZIJA8Fje7rYsRzyWMLPcQUn',
-          Accept: 'application/json',
-          'User-Agent': 'PostmanRuntime/7.31.1',
-          Host: 'us-east-2.aws.data.mongodb-api.com',
-          'Accept-Encoding': 'gzip, deflate, br',
-          Connection: 'keep-alive',
-        },
-        body: JSON.stringify({
-          dataSource: "CS495",
-          database: "db",
-          collection: "group",
-          filter: {"_id": {"$oid":id}}
-        }),
-      });
-      json = await response.json();
-      image = json.document.img;
-      groupName = json.document.name;
-      description = json.document.description
-      createdDate = json.document.created_date
-      //console.log(json.document.img)
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.setState({isLoading: false});
+
+  async getMemberPreviewInfo(membersArray){
+    let response;
+    memberNames.length = 0;
+    memberImages.length = 0;
+    for(let i = 0; i < membersArray.length; i++){
+      response = await findOne("user", {"_id": {"$oid":membersArray[i]}});
+      memberNames.push(response.document.fname);
+      memberImages.push(response.document.img);
     }
+    if (memberNames.length == 1 && memberImages.length == 1){         //avoid source being an empty string warning
+      memberImages[1] = "placeholder";
+      memberImages[2] = "placeholder";
+    }
+    else if (memberNames.length == 2 && memberImages.length == 2){
+      memberImages[2] = "placeholder";
+    }
+    console.log(membersArray.length);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    this.setState({isLoading: true});  //update screen after data retrieval
     const {groupId} = this.props.route.params
-    console.log(groupId);
-    this.getGroup(groupId);
+    GROUPID = groupId;
+    const response = await findOne("group", {"_id": {"$oid":groupId}});
+    image = response.document.img;
+    groupName = response.document.name;
+    description = response.document.description
+    createdDate = response.document.created_date
+    memberCount = response.document.members.length
+    console.log(memberCount)
+    memberIDs = response.document.members
+    await this.getMemberPreviewInfo(memberIDs)
+    this.setState({isLoading: false});  //update screen after data retrieval
   }
+
   render (){
-    return(
-        <SafeAreaView style={styles.container}>
-          <ScrollView>
-            <Surface
-                elevation={20}
-                category="medium"
-                style={{ alignSelf: 'center', width: '80%', aspectRatio: 1, marginBottom: 20, borderRadius: 10}}
-            >
-              <Image
-                  source = {{uri:image}}
-                  style = {styles.groupPic}/>
-              <Text style = {styles.text}>{groupName}</Text>
-              <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-              <Text style = {styles.description}>{description}</Text>
-            </Surface>
-
-            <Surface
-                elevation={20}
-                category="medium"
-                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-            >
-              <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: 32</Text>
-              <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable}>
-                    <Image source = {require('../assets/casey.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>Casey</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable}>
-                    <Image source = {require('../assets/Rachel.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>Rachel</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable}>
-                    <Image source = {require('../assets/john.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>John</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page')}>
-                    <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>View All</Text>
-                </View>
-              </View>
-            </Surface>
-
-            <Surface
-                elevation={20}
-                category="medium"
-                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-            >
-              <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
-              <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
-                  <Surface
-                      elevation={6}
-                      category={"medium"}
-                      style={styles.eventTile}
-                  >
-                    <Text style = {styles.eventName}>MTB At Sokol Park</Text>
-                    <Text style = {styles.eventDetails}>3/10/2023 at 3:00pm </Text>
-                  </Surface>
-                </TouchableOpacity>
-                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
-                  <Surface
-                      elevation={6}
-                      category={"medium"}
-                      style={styles.eventTile}
-                  >
-                    <Text style = {styles.eventName}>Group Lunch</Text>
-                    <Text style = {styles.eventDetails}>3/11/2023 at 12:00pm </Text>
-                  </Surface>
-                </TouchableOpacity>
-              </View>
-            </Surface>
-            <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-              <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                <Button  buttonStyle={{
-                  backgroundColor: 'rgba(111, 202, 186, 1)',
-                  borderRadius: 5,
-                  width: '20%',
-                  alignSelf:'center',
-                  justifySelf: 'center'
-                }}>Join</Button>
-                <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
-              </ImageBackground>
-            </View>
-          </ScrollView>
+    const RenderedObject = () => {
+      if (this.state.isLoading) {
+        return <SafeAreaView style={styles.container}>
+          <View>
+            <ActivityIndicator  size='large' color="#00ff00" />
+          </View>
         </SafeAreaView>
-    );
+      }
+
+      return(
+          <SafeAreaView style={styles.container}>
+            <ScrollView>
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+              >
+                <Image
+                    source = {{uri:image}}
+                    style = {styles.groupPic}/>
+                <Text style = {styles.text}>{groupName}</Text>
+                <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+                <Text style = {styles.description}>{description}</Text>
+              </Surface>
+
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+              >
+                <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+                <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable}>
+                      <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[0]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable}>
+                      <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[1]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable}>
+                      <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[2]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                      <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>View All</Text>
+                  </View>
+                </View>
+              </Surface>
+
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+              >
+                <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
+                <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
+                  <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                    <Surface
+                        elevation={6}
+                        category={"medium"}
+                        style={styles.eventTile}
+                    >
+                      <Text style = {styles.eventName}>MTB At Sokol Park</Text>
+                      <Text style = {styles.eventDetails}>3/10/2023 at 3:00pm </Text>
+                    </Surface>
+                  </TouchableOpacity>
+                  <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                    <Surface
+                        elevation={6}
+                        category={"medium"}
+                        style={styles.eventTile}
+                    >
+                      <Text style = {styles.eventName}>Group Lunch</Text>
+                      <Text style = {styles.eventDetails}>3/11/2023 at 12:00pm </Text>
+                    </Surface>
+                  </TouchableOpacity>
+                </View>
+              </Surface>
+              <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+                <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+                  <Button  buttonStyle={{
+                    backgroundColor: 'rgba(111, 202, 186, 1)',
+                    borderRadius: 5,
+                    width: '20%',
+                    alignSelf:'center',
+                    justifySelf: 'center'
+                  }}>Join</Button>
+                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                </ImageBackground>
+              </View>
+            </ScrollView>
+          </SafeAreaView>
+      );
+    }
+    return(<RenderedObject/>)
   }
 }
 
@@ -214,7 +232,7 @@ const styles = StyleSheet.create({
   memberName:{
     textAlign: 'center',
     fontSize: RFPercentage(2),
-    paddingTop: '8%',
+    paddingTop: '5%',
     fontWeight:'bold'
   },
   memberTouchable:{
