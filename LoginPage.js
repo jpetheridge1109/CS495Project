@@ -13,7 +13,7 @@ export default function LoginPage() {
     // using axios or another HTTP client library.
 
     // After the login is successful, navigate to the next screen.
-    navigation.navigate('Home');
+    navigation.navigate('Find a Group');
   };
 
   return (
