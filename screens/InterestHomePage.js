@@ -38,6 +38,7 @@ export default class Test extends React.Component{
     this.state = {
       data: [],
       isLoading: true,
+      numEvents:0
     };
   }
 
@@ -96,6 +97,10 @@ export default class Test extends React.Component{
       eventDates.push(this.formatDate(dateTime));
       eventTimes.push(this.formatTime(dateTime));
     }
+
+    if(eventDates.length > 0){
+      this.setState({numEvents:eventDates.length})
+    }
   }
 
   formatDate(date){
@@ -109,6 +114,7 @@ export default class Test extends React.Component{
   async componentDidMount() {
     this.setState({isLoading: true});  //update screen after data retrieval
     const {groupId} = this.props.route.params
+    console.log(groupId)
     GROUPID = groupId;
     const response = await findOne("group", {"_id": {"$oid":groupId}});
     image = response.document.img;
@@ -131,6 +137,169 @@ export default class Test extends React.Component{
             <ActivityIndicator  size='large' color="#00ff00" />
           </View>
         </SafeAreaView>
+      }
+
+      else if(this.state.numEvents === 0){
+        return(
+            <SafeAreaView style={styles.container}>
+              <ScrollView>
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Image
+                      source = {{uri:image}}
+                      style = {styles.groupPic}/>
+                  <Text style = {styles.text}>{groupName}</Text>
+                  <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+                  <Text style = {styles.description}>{description}</Text>
+                </Surface>
+
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+                  <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
+                        <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[0]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[1], isDefault:false})}>
+                        <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[1]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
+                        <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[2]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                        <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>View All</Text>
+                    </View>
+                  </View>
+                </Surface>
+
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
+                  <Text style={{textAlign: 'center', paddingTop: '3%', paddingBottom:'1%', fontSize: RFPercentage(2)}}>No Events</Text>
+                </Surface>
+                <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+                  <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+                    <Button  buttonStyle={{
+                      backgroundColor: 'rgba(111, 202, 186, 1)',
+                      borderRadius: 5,
+                      width: '20%',
+                      alignSelf:'center',
+                      justifySelf: 'center'
+                    }}>Join</Button>
+                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                  </ImageBackground>
+                </View>
+              </ScrollView>
+            </SafeAreaView>
+        );
+      }
+
+      else if(this.state.numEvents === 1){
+        return(
+            <SafeAreaView style={styles.container}>
+              <ScrollView>
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Image
+                      source = {{uri:image}}
+                      style = {styles.groupPic}/>
+                  <Text style = {styles.text}>{groupName}</Text>
+                  <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+                  <Text style = {styles.description}>{description}</Text>
+                </Surface>
+
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+                  <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[0], isDefault:false})}>
+                        <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[0]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
+                        <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[1]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
+                        <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>{memberNames[2]}</Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                        <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                      </TouchableOpacity>
+                      <Text style = {styles.memberName}>View All</Text>
+                    </View>
+                  </View>
+                </Surface>
+
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+                >
+                  <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
+                  <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
+                    <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                      <Surface
+                          elevation={6}
+                          category={"medium"}
+                          style={styles.eventTile}
+                      >
+                        <Text style = {styles.eventName}>{eventNames[0]}</Text>
+                        <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
+                      </Surface>
+                    </TouchableOpacity>
+                  </View>
+                </Surface>
+                <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+                  <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+                    <Button  buttonStyle={{
+                      backgroundColor: 'rgba(111, 202, 186, 1)',
+                      borderRadius: 5,
+                      width: '20%',
+                      alignSelf:'center',
+                      justifySelf: 'center'
+                    }}>Join</Button>
+                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                  </ImageBackground>
+                </View>
+              </ScrollView>
+            </SafeAreaView>
+        );
       }
 
       return(
@@ -157,19 +326,19 @@ export default class Test extends React.Component{
                 <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
                 <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
                       <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[0]}</Text>
                   </View>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
                       <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[1]}</Text>
                   </View>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[2], isDefault:false})}>
                       <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[2]}</Text>

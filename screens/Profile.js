@@ -1,68 +1,192 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView, ActivityIndicator, FlatList
+} from 'react-native';
+import {find, findOne} from "../db";
+import React from "react";
 
 /* NEXT STEPS:
 -Add settings button to top bar
 -Fix shadows
 */
-export default function Profile() {
-  return (
-    <View style={styles.container}>
+let name = "";
+let age = "";
+let grade = "";
+let major = "";
+let aboutMe = "";
+let interestIds = [];
+let profilePic = "placeholder"
+let interests = []
 
-    {/* Gonna keep the Commonality header off for now, the header is gonna be a Group List implemented next sprint */}
-    {/*  
+export default class InterestCategory extends React.Component{
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      data: [],
+      isLoading: true,
+      isDefault: true,
+    };
+  }
+
+  async getInterestInfo(interestIds){
+    let response;
+    interests.length = 0
+    for(let i = 0; i < interestIds.length; i++){
+      response = await findOne("group", {"_id": {"$oid":interestIds[i]}});
+      interests.push(response.document)
+    }
+  }
+
+  async componentDidMount() {
+    if(this.props.route.params === undefined){
+      this.setState({isLoading:false})
+      return;
+    }
+    const {memberId, isDefault} = this.props.route.params
+    console.log(this.props.route)
+
+    this.setState({isDefault:isDefault})
+    let response = await findOne("user", {"_id": {"$oid":memberId}});
+    interestIds.length = 0;
+
+    name = response.document.fname +" "+ response.document.lname;
+    age = response.document.age
+    grade = response.document.class
+    major = response.document.major
+    aboutMe = response.document.bio
+    interestIds = response.document.groups
+    profilePic = response.document.img
+    await this.getInterestInfo(interestIds);
+
+    this.setState({isLoading:false})
+  }
+  render(){
+    const RenderedObject = () => {
+      if (this.state.isLoading) {
+        return <SafeAreaView style={styles.container}>
+          <View>
+            <ActivityIndicator size='large' color="#00ff00"/>
+          </View>
+        </SafeAreaView>
+      }
+      if (this.state.isDefault){
+        return (
+            <View style={styles.container}>
+
+              {/* Gonna keep the Commonality header off for now, the header is gonna be a Group List implemented next sprint */}
+              {/*
       <View style={styles.topBar}>
         <Text style={styles.topBarFont}>Commonality</Text>
       </View>
     */}
 
-      <ScrollView>
-        <Image source={require('../assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
+              <ScrollView>
+                <Image source={require('../assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>Jacob Pearson</Text>
-          <Text style={styles.bodyFont}>Age: 21</Text>
-          <Text style={styles.bodyFont}>Grade: Junior</Text>
-          <Text style={styles.bodyFontBottom}>Major: Computer Science</Text>
-          <TouchableOpacity style={styles.dmBox}>
-            <Image source={require('../assets/mail-icon.png')} style={styles.dmPic}></Image>
-            <Text style={styles.dmFont}>Direct Message</Text>
-          </TouchableOpacity>
-        </View>
+                <View style={styles.infoBackground}>
+                  <Text style={styles.nameFont}>Jacob Pearson</Text>
+                  <Text style={styles.bodyFont}>Age: 21</Text>
+                  <Text style={styles.bodyFont}>Grade: Junior</Text>
+                  <Text style={styles.bodyFontBottom}>Major: Computer Science</Text>
+                  <TouchableOpacity style={styles.dmBox}>
+                    <Image source={require('../assets/mail-icon.png')} style={styles.dmPic}></Image>
+                    <Text style={styles.dmFont}>Direct Message</Text>
+                  </TouchableOpacity>
+                </View>
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>About Me:</Text>
-          <Text style={styles.bodyFontBottom}>This is where the about section will go. Students can go into more detail about their interests here. The actual interests listed below are clickable, and will have functionality to go to interest pages.</Text>
-        </View>
+                <View style={styles.infoBackground}>
+                  <Text style={styles.nameFont}>About Me:</Text>
+                  <Text style={styles.bodyFontBottom}>This is where the about section will go. Students can go into more detail about their interests here. The actual interests listed below are clickable, and will have functionality to go to interest pages.</Text>
+                </View>
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>Interests:</Text>
+                <View style={styles.infoBackground}>
+                  <Text style={styles.nameFont}>Interests:</Text>
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Mountain Biking</Text>
-          </TouchableOpacity>
+                  <TouchableOpacity style={styles.interestBox}>
+                    <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
+                    <Text style={styles.interestFont}>Mountain Biking</Text>
+                  </TouchableOpacity>
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Music</Text>
-          </TouchableOpacity>
+                  <TouchableOpacity style={styles.interestBox}>
+                    <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
+                    <Text style={styles.interestFont}>Music</Text>
+                  </TouchableOpacity>
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Photography</Text>
-          </TouchableOpacity>
+                  <TouchableOpacity style={styles.interestBox}>
+                    <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
+                    <Text style={styles.interestFont}>Photography</Text>
+                  </TouchableOpacity>
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Video Games</Text>
-          </TouchableOpacity>
+                  <TouchableOpacity style={styles.interestBox}>
+                    <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
+                    <Text style={styles.interestFont}>Video Games</Text>
+                  </TouchableOpacity>
 
-        </View>
-      </ScrollView>
-      <StatusBar style='auto'/>
-    </View>
-  );
+                </View>
+              </ScrollView>
+              <StatusBar style='auto'/>
+            </View>
+        );
+      }
+      return (
+          <View style={styles.container}>
+
+            {/* Gonna keep the Commonality header off for now, the header is gonna be a Group List implemented next sprint */}
+            {/*
+      <View style={styles.topBar}>
+        <Text style={styles.topBarFont}>Commonality</Text>
+      </View>
+    */}
+
+            <ScrollView overScrollMode={"auto"}>
+              <Image source={{uri:profilePic}}
+                     style={styles.profPic}></Image>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>{name}</Text>
+                <Text style={styles.bodyFont}>Age: {age}</Text>
+                <Text style={styles.bodyFont}>Grade: {grade}</Text>
+                <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+                <TouchableOpacity style={styles.dmBox}>
+                  <Image source={require('../assets/mail-icon.png')}
+                         style={styles.dmPic}></Image>
+                  <Text style={styles.dmFont}>Direct Message</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>About Me:</Text>
+                <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
+              </View>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>Interests:</Text>
+                {
+                  interests.map((item) => <Item item={item}/>)
+                }
+              </View>
+            </ScrollView>
+            <StatusBar style='auto'/>
+          </View>
+      );
+    }
+    const Item = ({item}) => (
+        <TouchableOpacity style={styles.interestBox}>
+          <Image source={{uri:item.img}} style={styles.interestPic}></Image>
+          <Text style={styles.interestFont}>{item.name}</Text>
+        </TouchableOpacity>
+    );
+    return(
+        <RenderedObject/>
+    )
+  }
 }
 
 //Code that is for the container and for formatting

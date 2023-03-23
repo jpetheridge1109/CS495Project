@@ -67,7 +67,7 @@ export default class MemberList extends React.Component{
     }
 
     const Item = ({item}) => (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: item._id, isDefault:false})}>
           <Surface
               elevation={20}
               category="medium"
