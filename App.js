@@ -1,22 +1,17 @@
-import * as React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import Event  from './modals/Event.js'
-import Profile from './screens/Profile.js'
-import GroupFind from './GroupFind.js'
-import SettingsHomepage from './screens/SettingsHomepage.js'
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Drawer = createDrawerNavigator();
+import LoginPage from './LoginPage.js';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Find A Group">
-      <Drawer.Screen name="Find a Group" component={GroupFind} />
-        <Drawer.Screen name="Profile" component={Profile} />
-        <Drawer.Screen name="Event" component={Event} />
-        <Drawer.Screen name="Preferences" component={SettingsHomepage} />
-      </Drawer.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginPage} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
