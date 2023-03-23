@@ -16,7 +16,7 @@ import {
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import { findOne } from '../db.js'
+import {findOne, find, aggregation} from '../db.js'
 
 let image = "placeholder";
 let groupName = "";
@@ -27,6 +27,10 @@ let memberIDs = [];
 let memberNames = [];
 let memberImages = [];
 let GROUPID;
+let eventNames = [];
+let eventDates = [];
+let eventTimes = [];
+
 export default class Test extends React.Component{
   constructor(props) {
     super(props);
@@ -56,6 +60,52 @@ export default class Test extends React.Component{
     console.log(membersArray.length);
   }
 
+  async getUpcomingEventInfo(groupId) {
+    const today = this.formatDate(new Date())
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow = this.formatDate(tomorrow)
+    let epochTomorrow = (new Date(tomorrow.toString()).getTime() / 1000)
+    let epochToday = (new Date(today.toString()).getTime() / 1000)
+    let response = await aggregation("event", [
+      {
+        "$match": {
+          "$and": [{"group": {"$oid": groupId}},
+            {"date": {"$gte": epochToday}}]
+        }
+      },
+      {
+        "$sort": {"date": 1}
+      },
+      {
+        "$limit": 2
+      }
+    ]);
+    let upcomingEvents = response.documents
+    console.log(upcomingEvents);
+
+    eventNames.length = 0;
+    eventDates.length = 0;
+    eventTimes.length = 0;
+
+    for(let i = 0; i < upcomingEvents.length; i++){
+      eventNames.push(upcomingEvents[i].name);
+      let date = upcomingEvents[i].date;
+      let dateTime = new Date(0);
+      dateTime.setSeconds(date);
+      eventDates.push(this.formatDate(dateTime));
+      eventTimes.push(this.formatTime(dateTime));
+    }
+  }
+
+  formatDate(date){
+    return date.toLocaleDateString('en-US')
+  }
+
+  formatTime(date){
+    return date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})
+  }
+
   async componentDidMount() {
     this.setState({isLoading: true});  //update screen after data retrieval
     const {groupId} = this.props.route.params
@@ -69,6 +119,7 @@ export default class Test extends React.Component{
     console.log(memberCount)
     memberIDs = response.document.members
     await this.getMemberPreviewInfo(memberIDs)
+    console.log(await this.getUpcomingEventInfo(groupId));
     this.setState({isLoading: false});  //update screen after data retrieval
   }
 
@@ -145,8 +196,8 @@ export default class Test extends React.Component{
                         category={"medium"}
                         style={styles.eventTile}
                     >
-                      <Text style = {styles.eventName}>MTB At Sokol Park</Text>
-                      <Text style = {styles.eventDetails}>3/10/2023 at 3:00pm </Text>
+                      <Text style = {styles.eventName}>{eventNames[0]}</Text>
+                      <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
                     </Surface>
                   </TouchableOpacity>
                   <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
@@ -155,8 +206,8 @@ export default class Test extends React.Component{
                         category={"medium"}
                         style={styles.eventTile}
                     >
-                      <Text style = {styles.eventName}>Group Lunch</Text>
-                      <Text style = {styles.eventDetails}>3/11/2023 at 12:00pm </Text>
+                      <Text style = {styles.eventName}>{eventNames[1]}</Text>
+                      <Text style = {styles.eventDetails}>{eventDates[1]} at {eventTimes[1]}</Text>
                     </Surface>
                   </TouchableOpacity>
                 </View>
