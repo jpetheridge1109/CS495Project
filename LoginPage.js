@@ -35,6 +35,12 @@ export default function LoginPage() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      <View style={styles.signupTextContainer}>
+        <Text style={styles.signupText}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.signupLink}>Sign up here</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -45,6 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
+    marginTop: -160,
   },
   heading: {
     fontSize: 24,
@@ -70,5 +77,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  signupTextContainer: {
+    flexDirection: 'row',
+    paddingVertical: 30,
+  },
+  signupText: {
+    fontSize: 16,
+  },
+  signupLink: {
+    fontSize: 16,
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
