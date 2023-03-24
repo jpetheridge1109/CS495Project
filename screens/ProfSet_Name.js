@@ -2,27 +2,50 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-
-export default function LoginPage() {
+export default function ProfSet_Name() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    // Here you can perform your login logic, such as sending a request to your backend API
-    // using axios or another HTTP client library.
+  const handleNext = () => {
+    // Here you can perform any necessary validation of the user input
+    // before navigating to the next screen.
 
-    // After the login is successful, navigate to the next screen.
-    navigation.navigate('Find a Group');
+    navigation.navigate('Details', {
+      firstName,
+      lastName,
+      email,
+      password,
+    });
   };
 
-  const handleSignIn = () => {
-    navigation.navigate('Name');
+  const handleBack = () => {
+    navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Login</Text>
+        <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack}>
+            <Text style={styles.backButton}>Back</Text>
+        </TouchableOpacity>
+        </View>
+      <Text style={styles.heading}>Profile Setup: Name</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="First Name"
+        onChangeText={setFirstName}
+        value={firstName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Last Name"
+        onChangeText={setLastName}
+        value={lastName}
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -36,15 +59,9 @@ export default function LoginPage() {
         onChangeText={setPassword}
         value={password}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleNext}>
+        <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>
-      <View style={styles.signupTextContainer}>
-        <Text style={styles.signupText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={handleSignIn}>
-          <Text style={styles.signupLink}>Sign up here</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -71,6 +88,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
+  backButton: {
+    backgroundColor: 'blue',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+  },
   button: {
     backgroundColor: 'blue',
     paddingVertical: 10,
@@ -81,17 +104,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  signupTextContainer: {
-    flexDirection: 'row',
-    paddingVertical: 30,
-  },
-  signupText: {
-    fontSize: 16,
-  },
-  signupLink: {
-    fontSize: 16,
-    color: 'blue',
-    textDecorationLine: 'underline',
   },
 });
