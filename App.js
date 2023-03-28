@@ -1,6 +1,12 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import 'react-native-gesture-handler';
+import * as React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
+import Event  from './modals/Event.js'
+import Profile from './screens/Profile.js'
+import GroupFind from './GroupFind.js'
+import SettingsHomepage from './screens/SettingsHomepage.js'
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native';
@@ -14,6 +20,8 @@ import { chatApiKey, chatUserId } from './chatConfig';
 const chatClient = StreamChat.getInstance(chatApiKey);
 
 const Stack = createStackNavigator();
+
+const Drawer = createDrawerNavigator();
 
 const filters = {
   members: {
@@ -62,8 +70,8 @@ const NavigationStack = () => {
       <OverlayProvider>
         <Chat client={chatClient}>
         <Stack.Navigator>
-          <Stack.Screen name="ChannelList" component={ChannelListScreen} />
-          <Stack.Screen name="ChannelScreen" component={ChannelScreen} />
+          <Stack.Screen name="ChannelList" component={ChannelListScreen} options = {{ headerTitle:'Messages', headerTitleAlign:'center'}}/>
+          <Stack.Screen name="ChannelScreen" component={ChannelScreen} options = {{ headerTransparent: true, headerTitle:''}}/>
         </Stack.Navigator>
         </Chat>
       </OverlayProvider>
@@ -75,9 +83,16 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-          <NavigationStack />
+          <Drawer.Navigator initialRouteName="Find A Group">
+            <Drawer.Screen name="Find a Group" component={GroupFind} />
+            <Drawer.Screen name="Profile" component={Profile} />
+            <Drawer.Screen name="Event" component={Event} />
+            <Drawer.Screen name="Preferences" component={SettingsHomepage} />
+            <Drawer.Screen name="Chat" component={NavigationStack}/>
+          </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaView>
       </AppProvider>
+
   );
 };
