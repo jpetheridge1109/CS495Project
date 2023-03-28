@@ -37,6 +37,7 @@ export default class GroupFind extends React.Component{
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
             <Stack.Screen name = "Start" component = {Start}/>
             <Stack.Screen name = "RSVP List" component = {RSVPList}/>
+
           </Stack.Navigator>
     );
   }

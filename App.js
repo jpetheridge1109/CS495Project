@@ -7,12 +7,12 @@ import Event  from './modals/Event.js'
 import Profile from './screens/Profile.js'
 import GroupFind from './GroupFind.js'
 import SettingsHomepage from './screens/SettingsHomepage.js'
+import Calendar from './screens/Calendar.js'
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native';
 import { useChatClient } from './useChatClient';
 import {AppProvider, useAppContext} from "./AppContext";
-import App from "react-native/template/App";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId } from './chatConfig';
@@ -36,7 +36,7 @@ const sort = {
 
 const ChannelScreen = props => {
   const { channel } = useAppContext();
-
+  console.log(channel);
   return (
       <Channel channel={channel}>
         <MessageList />
@@ -57,7 +57,6 @@ const ChannelListScreen = props => {
       />
   );
 };
-
 
 
 const NavigationStack = () => {
@@ -89,6 +88,7 @@ export default () => {
             <Drawer.Screen name="Event" component={Event} />
             <Drawer.Screen name="Preferences" component={SettingsHomepage} />
             <Drawer.Screen name="Chat" component={NavigationStack}/>
+            <Drawer.Screen name="Calendar" component={Calendar}/>
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaView>

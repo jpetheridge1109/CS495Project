@@ -207,7 +207,7 @@ export default class Test extends React.Component{
                       alignSelf:'center',
                       justifySelf: 'center'
                     }}>Join</Button>
-                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
                   </ImageBackground>
                 </View>
               </ScrollView>
@@ -294,7 +294,7 @@ export default class Test extends React.Component{
                       alignSelf:'center',
                       justifySelf: 'center'
                     }}>Join</Button>
-                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
                   </ImageBackground>
                 </View>
               </ScrollView>
@@ -381,6 +381,29 @@ export default class Test extends React.Component{
                   </TouchableOpacity>
                 </View>
               </Surface>
+              <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
+                <TouchableOpacity style = {{flex:1}}  onPress={() => this.props.navigation.navigate('groupChat')}>
+                  <Surface
+                      elevation={20}
+                      category="medium"
+                      style={styles.buttonTile}
+                  >
+                    <Image source = {require('../assets/chat.png')} style = {styles.buttonImage}/>
+                    <Text style = {styles.memberName}>Chat</Text>
+                  </Surface>
+                </TouchableOpacity>
+                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('groupCalendar')}>
+                  <Surface
+                      elevation={20}
+                      category="medium"
+                      style={styles.buttonTile}
+                  >
+                    <Image source = {require('../assets/calendar.png')} style = {styles.buttonImage}/>
+                    <Text style = {styles.memberName}>Calendar</Text>
+                  </Surface>
+                </TouchableOpacity>
+              </View>
+
               <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
                 <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
                   <Button  buttonStyle={{
@@ -390,7 +413,7 @@ export default class Test extends React.Component{
                     alignSelf:'center',
                     justifySelf: 'center'
                   }}>Join</Button>
-                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat</Text>
+                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
                 </ImageBackground>
               </View>
             </ScrollView>
@@ -429,6 +452,13 @@ const styles = StyleSheet.create({
     borderRadius: 10000,
     marginTop: '5%',
   },
+  buttonImage:{
+    height: '50%',
+    aspectRatio:1,
+    alignSelf: 'center',
+    justifySelf: 'center',
+    marginTop:'5%',
+  },
   text:{
     paddingTop: '2%',
     pattingBottom: '2%',
@@ -465,6 +495,13 @@ const styles = StyleSheet.create({
     height:'90%',
     aspectRatio:1.8,
     alignSelf:'center'
+  },
+
+  buttonTile:{
+    height:'60%',
+    aspectRatio:1.5,
+    alignSelf:'center',
+    justifyContent: 'center'
   },
   eventDetails:{
     paddingLeft: '5%',
