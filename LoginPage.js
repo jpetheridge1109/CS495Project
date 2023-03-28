@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
 import ProfSetDetails from './screens/ProfSet_Details.js'
+import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ export default function LoginPage() {
         <Stack.Screen name="Login" component={LoginHome} />
         <Stack.Screen name="Name" component={ProfSetName} />
         <Stack.Screen name="Details" component={ProfSetDetails} />
+        <Stack.Screen name="About Me" component={ProfSetAboutMe} />
       </Stack.Navigator>
   );
 }

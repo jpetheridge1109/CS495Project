@@ -1,89 +1,60 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const AboutMe = ({ navigation }) => {
+export default function ProfSet_AboutMe() {
   const [aboutMe, setAboutMe] = useState('');
+  const navigation = useNavigation();
 
   const handleNext = () => {
-    const { firstName, lastName, age, grade, major } = navigation.state.params;
-    navigation.navigate('Find a Group', {
-      firstName: firstName,
-      lastName: lastName,
-      age: age,
-      grade: grade,
-      major: major,
-      aboutMe: aboutMe,
-    });
-  };
-
-  const handleBack = () => {
-    navigation.goBack();
+    // Navigate to home screen
+    navigation.navigate('Find a Group');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Tell us about yourself</Text>
+      <Text style={styles.heading}>Profile Setup: About Me</Text>
       <TextInput
         style={styles.input}
-        placeholder="About Me"
-        onChangeText={(text) => setAboutMe(text)}
+        placeholder="Tell us about yourself..."
+        multiline
+        onChangeText={setAboutMe}
         value={aboutMe}
-        multiline={true}
-        numberOfLines={5}
       />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleNext}>
+        <Text style={styles.buttonText}>Finish</Text>
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fff',
-    padding: 20,
+    marginTop: -160,
   },
-  header: {
+  heading: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
   },
   input: {
-    width: '100%',
-    height: 150,
+    width: '80%',
+    height: 120,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 4,
+    paddingHorizontal: 10,
     marginBottom: 20,
-    paddingLeft: 10,
-    fontSize: 18,
-    textAlignVertical: 'top',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    width: '100%',
-  },
-  backButton: {
-    backgroundColor: '#ccc',
+  button: {
+    backgroundColor: 'blue',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  nextButton: {
-    backgroundColor: '#0080ff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 4,
   },
   buttonText: {
     color: '#fff',
@@ -91,5 +62,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default AboutMe;

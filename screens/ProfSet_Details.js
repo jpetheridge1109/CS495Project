@@ -9,7 +9,7 @@ export default function ProfSet_Details() {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    navigation.navigate('Find a Group');
+    navigation.navigate('About Me');
   };
 
   return (
