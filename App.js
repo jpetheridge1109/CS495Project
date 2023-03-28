@@ -3,12 +3,13 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Event  from './modals/Event.js'
 import Profile from './screens/Profile.js'
 import GroupFind from './GroupFind.js'
 import SettingsHomepage from './screens/SettingsHomepage.js'
 import Calendar from './screens/Calendar.js'
-import { createStackNavigator } from '@react-navigation/stack';
+import LoginPage from './LoginPage.js'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native';
 import { useChatClient } from './useChatClient';
@@ -82,7 +83,10 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-          <Drawer.Navigator initialRouteName="Find A Group">
+        <Drawer.Navigator initialRouteName="Login Page">
+          <Drawer.Screen name="Login Page" component={LoginPage} options={{
+              drawerItemStyle: { height: 0 }
+            }}/>
             <Drawer.Screen name="Find a Group" component={GroupFind} />
             <Drawer.Screen name="Profile" component={Profile} />
             <Drawer.Screen name="Event" component={Event} />
