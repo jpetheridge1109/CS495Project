@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ProfSet_AboutMe() {
+export default function ProfSet_AboutMe({ route }) {
   const [aboutMe, setAboutMe] = useState('');
   const navigation = useNavigation();
+  const { firstName, lastName, email, password, age, grade, major } = route.params;
 
   const handleNext = () => {
     Alert.alert('Are you sure you finished setting up your profile?','',
@@ -17,6 +18,7 @@ export default function ProfSet_AboutMe() {
         {
           text: 'Yes',
           onPress: () => navigation.navigate('Find a Group')
+          //Send all var
         }
       ],
       { cancelable: false }

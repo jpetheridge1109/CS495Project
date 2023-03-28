@@ -14,7 +14,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Login Page">
-        <Drawer.Screen name="Login Page" component={LoginPage} />
+        <Drawer.Screen name="Login Page" component={LoginPage} options={{
+          drawerItemStyle: { height: 0 }
+          }}/>
         <Drawer.Screen name="Find a Group" component={GroupFind} />
         <Drawer.Screen name="Profile" component={Profile} />
         <Drawer.Screen name="Event" component={Event} />

@@ -1,15 +1,25 @@
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ProfSet_Details() {
+export default function ProfSet_Details({ route }) {
   const [age, setAge] = useState('');
   const [grade, setGrade] = useState('');
   const [major, setMajor] = useState('');
   const navigation = useNavigation();
+  const { firstName, lastName, email, password } = route.params;
 
   const handleNext = () => {
-    navigation.navigate('About Me');
+    navigation.navigate('About Me', {
+      firstName: JSON.stringify(firstName),
+      lastName: JSON.stringify(lastName),
+      email: JSON.stringify(email),
+      password: JSON.stringify(password),
+      age,
+      grade,
+      major,
+    });
   };
 
   const handleBack = () => {
