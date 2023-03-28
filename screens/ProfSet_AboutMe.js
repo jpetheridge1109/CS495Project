@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_AboutMe() {
@@ -7,8 +7,20 @@ export default function ProfSet_AboutMe() {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    // Navigate to home screen
-    navigation.navigate('Find a Group');
+    Alert.alert('Are you sure you finished setting up your profile?','',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('No Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'Yes',
+          onPress: () => navigation.navigate('Find a Group')
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleBack = () => {
