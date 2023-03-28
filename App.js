@@ -7,20 +7,8 @@ import Profile from './screens/Profile.js'
 import GroupFind from './GroupFind.js'
 import SettingsHomepage from './screens/SettingsHomepage.js'
 import LoginPage from './LoginPage.js'
-import ProfSetName from './screens/ProfSet_Name.js'
-import ProfSetDetails from './screens/ProfSet_Details.js'
 
 const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator();
-
-function ProfileSetupStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Name" component={ProfSetName} />
-      <Stack.Screen name="Details" component={ProfSetDetails} />
-    </Stack.Navigator>
-  );
-}
 
 export default function App() {
   return (
@@ -31,7 +19,6 @@ export default function App() {
         <Drawer.Screen name="Profile" component={Profile} />
         <Drawer.Screen name="Event" component={Event} />
         <Drawer.Screen name="Preferences" component={SettingsHomepage} />
-        <Drawer.Screen name="Profile Setup" component={ProfileSetupStack} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
