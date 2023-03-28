@@ -28,12 +28,9 @@ export default function ProfSet_Name() {
 
   return (
     <View style={styles.container}>
-        <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack}>
-            <Text style={styles.backButton}>Back</Text>
-        </TouchableOpacity>
-        </View>
-      <Text style={styles.heading}>Profile Setup: Name</Text>
+      <View style={styles.header}>
+        <Text style={styles.heading}>Profile Setup: Name</Text>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -59,9 +56,14 @@ export default function ProfSet_Name() {
         onChangeText={setPassword}
         value={password}
       />
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleBack}>
+          <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleNext}>
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -74,10 +76,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: -160,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 30,
+  },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
   },
   input: {
     width: '80%',
@@ -88,11 +96,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
-  backButton: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 4,
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%',
   },
   button: {
     backgroundColor: 'blue',
