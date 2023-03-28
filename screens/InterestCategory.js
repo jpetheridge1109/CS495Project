@@ -7,37 +7,13 @@ import {
   Text,
   StatusBar,
   TouchableOpacity,
-  Image
+  Image, ActivityIndicator
 } from 'react-native';
 
 import { Surface } from "@react-native-material/core";
 import { Divider } from '@rneui/themed';
 import {RFPercentage} from "react-native-responsive-fontsize";
-
-
-// const DATA = [
-//   {
-//     id: '1',
-//     name: 'Mountain Biking',
-//     img: require('../assets/bike.png'),
-//     numMembers: 20,
-//     description: 'We organize group rides for mountain and gravel biking in Tuscaloosa. We typically meet at Sokol Park on the weekends. All skill levels are welcome!'
-//   },
-//   {
-//     id: '2',
-//     name: 'French Students at UA',
-//     img: require('../assets/Flag_of_France.png'),
-//     numMembers: 32,
-//     description: 'We are French Students currently studying abroad at UA. We know life abroad can be stressful, so our goal is to help other French students find new friends on the other side of the pond. Come join us to eat, play, and have fun!'
-//   },
-//   {
-//     id: '3',
-//     name: 'Monopoly',
-//     img: require('../assets/monopoly.png'),
-//     numMembers: 15,
-//     description: 'Like playing Monopoly? If so, this group is for you. We organize game nights and tournaments every week!'
-//   }
-// ];
+import {find} from '../db.js'
 let DATA = [];
 
 export default class InterestCategory extends React.Component{
@@ -49,43 +25,38 @@ export default class InterestCategory extends React.Component{
       isLoading: true,
     };
   }
-  async getCategory(category) {
-    try {
-      const response = await fetch('https://us-east-2.aws.data.mongodb-api.com/app/data-upeqz/endpoint/data/v1/action/find',{
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',
-          'Access-Control-Request-Headers': '*',
-          'api-key': 'ujz8gEvjLM3N0sxoWZ40g8S9rvmNxsGAutAbFrNv3ZIJA8Fje7rYsRzyWMLPcQUn',
-          Accept: 'application/json',
-          'User-Agent': 'PostmanRuntime/7.31.1',
-          Host: 'us-east-2.aws.data.mongodb-api.com',
-          'Accept-Encoding': 'gzip, deflate, br',
-          Connection: 'keep-alive',
-        },
-        body: JSON.stringify({
-          dataSource: "CS495",
-          database: "db",
-          collection: "group",
-          filter: { "category": category}
-        }),
-      });
-      const json = await response.json();
-      DATA = json.documents;
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.setState({isLoading: false});
-    }
-  }
 
-  componentDidMount() {
+  async componentDidMount() {
+    this.setState({isLoading: true});      //update screen after data retrieval
     const {categoryName} = this.props.route.params
     console.log(categoryName);
-    this.getCategory(categoryName);
+    const response = await find("group", { "category": categoryName});
+    DATA = response.documents;
+    this.setState({isLoading: false});      //update screen after data retrieval
   }
 
   render (){
+    const RenderedObject = () => {
+      if (this.state.isLoading) {
+        return <SafeAreaView style={styles.container}>
+          <Text style={styles.categories}>Groups</Text>
+          <View>
+            <ActivityIndicator  size='large' color="#00ff00" />
+          </View>
+        </SafeAreaView>
+      }
+
+      return(
+          <SafeAreaView style={styles.container}>
+            <Text style={styles.categories}>Groups</Text>
+            <FlatList
+                data={DATA}
+                renderItem={({item}) => <Item item={item}/>}
+                keyExtractor={item => item._id}
+            />
+          </SafeAreaView>
+      )
+    }
     const Item = ({item}) => (
         <TouchableOpacity onPress={() => this.props.navigation.navigate('Interest_Home_Page',{groupId:item._id})}>
           <Surface
@@ -110,15 +81,7 @@ export default class InterestCategory extends React.Component{
     );
 
     return(
-         <SafeAreaView style={styles.container}>
-           <Text style={styles.categories}>Groups</Text>
-           <FlatList
-               data={DATA}
-               renderItem={({item}) => <Item item={item}/>}
-               keyExtractor={item => item._id}
-           />
-         </SafeAreaView>
-
+         <RenderedObject/>
     );
   }
 }

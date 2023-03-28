@@ -6,7 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MemberList from "./screens/MemberList";
 import RSVPList from "./screens/RSVPList";
 import Start from "./modals/Event";
-
+import Profile from './screens/Profile'
 const Stack = createNativeStackNavigator();
 
 export default class GroupFind extends React.Component{
@@ -30,8 +30,14 @@ export default class GroupFind extends React.Component{
                 name="Members_Page"
                 component={MemberList}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
+
+            <Stack.Screen
+                name="Member_Profile"
+                component={Profile}
+                options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
             <Stack.Screen name = "Start" component = {Start}/>
             <Stack.Screen name = "RSVP List" component = {RSVPList}/>
+
           </Stack.Navigator>
     );
   }
