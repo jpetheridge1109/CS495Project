@@ -16,7 +16,7 @@ import {
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import {findOne, find, aggregation} from '../db.js'
+import {findOne, aggregation} from '../db.js'
 
 let image = "placeholder";
 let groupName = "";

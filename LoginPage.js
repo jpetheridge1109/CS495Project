@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
 import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
+import {findOne} from "./db";
 
 const Stack = createStackNavigator();
 
@@ -24,9 +25,18 @@ function LoginHome() {
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
-    navigation.navigate('Find a Group');
+    const response = await findOne('user',{"email": email.toLowerCase(), "password": password})
+    if(response.document == null){
+      console.log("Invalid username or password");
+    }
+    else{
+      const userID = response.document._id;
+      global.userID = userID;
+      console.log("User " + global.userID + " successfully logged in")
+      navigation.navigate('Find a Group');
+    }
   };
 
   const handleSignIn = () => {

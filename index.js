@@ -1,4 +1,5 @@
 import { registerRootComponent } from 'expo';
+import './global.js'
 
 import App from './App';
 
