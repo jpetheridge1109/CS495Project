@@ -34,8 +34,8 @@ function LoginHome() {
     else{
       const userID = response.document._id;
       global.userID = userID;
-      console.log("User " + global.userID + " successfully logged in")
-      navigation.navigate('Find a Group');
+      console.log("User " + userID + " successfully logged in")
+      navigation.navigate('Find a Group', {userID:userID});
     }
   };
 

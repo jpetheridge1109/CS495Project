@@ -124,6 +124,8 @@ export default class InterestSearch extends React.Component{
     this.setState({ search });
   };
   render (){
+    const {userID} = this.props.route.params
+    console.log("Hello" + userID);
     const { search } = this.state;
     const Item = ({item}) => (
         <TouchableOpacity style={[styles.item,{backgroundColor: item.color}]} onPress={() => this.props.navigation.navigate('Specific_Interests',{categoryName:item.name})}>
@@ -150,7 +152,7 @@ export default class InterestSearch extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight + 10 || 0,
+    //paddingTop: StatusBar.currentHeight + 10 || 0,
     backgroundColor: '#344e71'
   },
   item: {
