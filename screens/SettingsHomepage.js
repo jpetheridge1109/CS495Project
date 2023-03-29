@@ -46,6 +46,7 @@ function Settings({ navigation }) {
   const handleLogOutConfirmation = (confirmed) => {
     setIsLogOutConfirmationVisible(false);
     if (confirmed) {
+      navigation.navigate('Login Page');
       console.log('Logging out...');
     }
   };
