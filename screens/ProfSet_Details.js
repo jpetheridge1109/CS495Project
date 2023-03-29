@@ -7,19 +7,47 @@ export default function ProfSet_Details({ route }) {
   const [age, setAge] = useState('');
   const [grade, setGrade] = useState('');
   const [major, setMajor] = useState('');
+  const [ageError, setAgeError] = useState('');
+  const [gradeError, setGradeError] = useState('');
+  const [majorError, setMajorError] = useState('');
   const navigation = useNavigation();
   const { firstName, lastName, email, password } = route.params;
 
   const handleNext = () => {
-    navigation.navigate('About Me', {
-      firstName: JSON.stringify(firstName),
-      lastName: JSON.stringify(lastName),
-      email: JSON.stringify(email),
-      password: JSON.stringify(password),
-      age,
-      grade,
-      major,
-    });
+    let isValid = true;
+
+    if(age < 10 || age > 99) {
+      setAgeError('Please input a valid age');
+      isValid = false;
+    } else {
+      setAgeError('');
+    }
+
+    if (!grade) {
+      setGradeError('Please input your grade');
+      isValid = false;
+    } else {
+      setGradeError('');
+    }
+
+    if (!major) {
+      setMajorError('Please input your major');
+      isValid = false;
+    } else {
+      setMajorError('');
+    }
+
+    if(isValid) {
+      navigation.navigate('About Me', {
+        firstName: JSON.stringify(firstName),
+        lastName: JSON.stringify(lastName),
+        email: JSON.stringify(email),
+        password: JSON.stringify(password),
+        age,
+        grade,
+        major,
+      });
+    }
   };
 
   const handleBack = () => {
@@ -37,18 +65,21 @@ export default function ProfSet_Details({ route }) {
           value={age}
           keyboardType="numeric"
         />
+        {ageError ? (<Text style={styles.error}>{ageError}</Text>) : null}
         <TextInput
           style={styles.input}
           placeholder="Grade"
           onChangeText={setGrade}
           value={grade}
         />
+        {gradeError ? (<Text style={styles.error}>{gradeError}</Text>) : null}
         <TextInput
           style={styles.input}
           placeholder="Major"
           onChangeText={setMajor}
           value={major}
         />
+        {majorError ? (<Text style={styles.error}>{majorError}</Text>) : null}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Back</Text>
@@ -99,6 +130,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
     fontWeight: 'bold',
   },
 });

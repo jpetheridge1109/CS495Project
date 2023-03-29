@@ -4,25 +4,37 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_AboutMe({ route }) {
   const [aboutMe, setAboutMe] = useState('');
+  const [aboutMeError, setAboutMeError] = useState('');
   const navigation = useNavigation();
   const { firstName, lastName, email, password, age, grade, major } = route.params;
 
   const handleNext = () => {
-    Alert.alert('Are you sure you finished setting up your profile?','',
-      [
-        {
-          text: 'No',
-          onPress: () => console.log('No Pressed'),
-          style: 'cancel'
-        },
-        {
-          text: 'Yes',
-          onPress: () => navigation.navigate('Find a Group')
-          //Send all variables to DB here
-        }
-      ],
-      { cancelable: false }
-    );
+    let isValid = true;
+
+    if(!aboutMe) {
+      setAboutMeError('Please input a description');
+      isValid = false;
+    } else {
+      setAboutMeError('');
+    }
+
+    if(isValid) {
+      Alert.alert('Are you sure you finished setting up your profile?','',
+        [
+          {
+            text: 'No',
+            onPress: () => console.log('No Pressed'),
+            style: 'cancel'
+          },
+          {
+            text: 'Yes',
+            onPress: () => navigation.navigate('Find a Group')
+            //Send all variables to DB here
+          }
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
   const handleBack = () => {
@@ -40,6 +52,7 @@ export default function ProfSet_AboutMe({ route }) {
           onChangeText={setAboutMe}
           value={aboutMe}
         />
+        {aboutMeError ? (<Text style={styles.error}>{aboutMeError}</Text>) : null}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Back</Text>
@@ -90,6 +103,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
     fontWeight: 'bold',
   },
 });
