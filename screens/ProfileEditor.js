@@ -1,7 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity} from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import ProfileEditor from './ProfileEditor';
+import { StyleSheet, Text, TextInput, View, Image, ScrollView, TouchableOpacity} from 'react-native';
 
 let firstName = 'First';
 let lastName = 'Last';
@@ -10,41 +8,17 @@ let grade = 'Grade'
 let major = 'Major';
 let aboutMe = 'n/a';
 
-const Stack = createStackNavigator();
-
-export default function ProfilePage() {
-  return (
-    <Stack.Navigator initialRouteName='Profile'>
-      <Stack.Screen name='Profile' component={Profile} />
-      <Stack.Screen name='ProfileEditor' component={ProfileEditor} />
-    </Stack.Navigator>
-  );
-}
-
-function Profile({ navigation }) {
-
-  const handleEditPress = () => {
-    navigation.navigate('ProfileEditor');
-  };
-
+export default function ProfileEditor() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <TouchableOpacity style={styles.editBox} onPress={handleEditPress}>
-          <Image source={require('./assets/profile_edit_icon.jpg')} style={styles.dmPic}></Image>
-          <Text style={styles.dmFont}>Edit Profile</Text>
-        </TouchableOpacity>
-        <Image source={require('./assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
+        <Image source={require('../assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
 
         <View style={styles.infoBackground}>
           <Text style={styles.nameFont}>{firstName} {lastName}</Text>
           <Text style={styles.bodyFont}>Age: {age}</Text>
           <Text style={styles.bodyFont}>Grade: {grade}</Text>
           <Text style={styles.bodyFontBottom}>Major: {major}</Text>
-          <TouchableOpacity style={styles.dmBox}>
-            <Image source={require('./assets/mail-icon.png')} style={styles.dmPic}></Image>
-            <Text style={styles.dmFont}>Direct Message</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.infoBackground}>
@@ -56,22 +30,22 @@ function Profile({ navigation }) {
           <Text style={styles.nameFont}>Interests:</Text>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/bike.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Mountain Biking</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/musical-note.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Music</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/camera.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Photography</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('./assets/game-console.png')} style={styles.interestPic}></Image>
+            <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
             <Text style={styles.interestFont}>Video Games</Text>
           </TouchableOpacity>
 
@@ -93,6 +67,23 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
+  //Styles for the top bar
+  topBar: {
+    //alignSelf: 'center',
+    justifySelf: 'stretch',
+    backgroundColor: '#bc1000',
+    height: '10%',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  topBarFont: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: 'bold',
+    jutifyContent: 'center',
+    marginHorizontal: 10,
+  },
+
   //Styles for profile page information
   infoBackground: {
     backgroundColor: '#ffffff', //'#e6e6e6',
@@ -100,16 +91,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     borderRadius: 15,
     alignItems: 'center'
-  },
-  editBox: {
-    backgroundColor: '#ffffff', //'#cccccc',
-    marginBottom: 10,
-    marginHorizontal: 5,
-    borderRadius: 15,
-    //width: '95%',
-    height: 50,
-    alignItems: 'center',
-    flexDirection: 'row'
   },
   dmBox: {
     backgroundColor: '#e6e6e6', //'#cccccc',
