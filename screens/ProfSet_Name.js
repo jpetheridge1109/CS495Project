@@ -7,10 +7,12 @@ export default function ProfSet_Name() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [passwordMatchError, setPasswordMatchError] = useState('');
 
   const navigation = useNavigation();
 
@@ -43,6 +45,13 @@ export default function ProfSet_Name() {
       isValid = false;
     } else {
       setPasswordError('');
+    }
+
+    if (password != confirmPassword) {
+      setPasswordMatchError('Passwords don\'t match!');
+      isValid = false;
+    } else {
+      setPasswordMatchError('');
     }
 
     if(isValid) {
@@ -94,6 +103,14 @@ export default function ProfSet_Name() {
           value={password}
         />
         {passwordError ? (<Text style={styles.error}>{passwordError}</Text>) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry
+          onChangeText={setConfirmPassword}
+          value={confirmPassword}
+        />
+        {passwordMatchError ? (<Text style={styles.error}>{passwordMatchError}</Text>) : null}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Back</Text>
