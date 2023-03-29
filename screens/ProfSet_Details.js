@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_Details({ route }) {
@@ -27,36 +27,38 @@ export default function ProfSet_Details({ route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Profile Setup: Details</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Age"
-        onChangeText={setAge}
-        value={age}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Grade"
-        onChangeText={setGrade}
-        value={grade}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Major"
-        onChangeText={setMajor}
-        value={major}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Profile Setup: Details</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Age"
+          onChangeText={setAge}
+          value={age}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Grade"
+          onChangeText={setGrade}
+          value={grade}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Major"
+          onChangeText={setMajor}
+          value={major}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 

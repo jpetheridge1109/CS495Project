@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_AboutMe({ route }) {
@@ -18,7 +18,7 @@ export default function ProfSet_AboutMe({ route }) {
         {
           text: 'Yes',
           onPress: () => navigation.navigate('Find a Group')
-          //Send all var
+          //Send all variables to DB here
         }
       ],
       { cancelable: false }
@@ -30,24 +30,26 @@ export default function ProfSet_AboutMe({ route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Profile Setup: About Me</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Tell us about yourself..."
-        multiline
-        onChangeText={setAboutMe}
-        value={aboutMe}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>Finish</Text>
-        </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Profile Setup: About Me</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Tell us about yourself..."
+          multiline
+          onChangeText={setAboutMe}
+          value={aboutMe}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Finish</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
