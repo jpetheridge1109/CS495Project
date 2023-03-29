@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, Touchabl
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 
+const grades = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Doctoral'];
+
 export default function ProfSet_Details({ route }) {
   const [age, setAge] = useState('');
   const [grade, setGrade] = useState('');
@@ -13,6 +15,14 @@ export default function ProfSet_Details({ route }) {
   const [image, setImage] = useState(null);
   const navigation = useNavigation();
   const { firstName, lastName, email, password } = route.params;
+
+  const [showOptions, setShowOptions] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleOptionPress = (option) => {
+    setSelectedOption(option);
+    setShowOptions(false);
+  };
 
   function isInt(value) {
     return !isNaN(value) && 
@@ -30,8 +40,8 @@ export default function ProfSet_Details({ route }) {
       setAgeError('');
     }
 
-    if (!grade) {
-      setGradeError('Please input your grade');
+    if (!selectedOption) {
+      setGradeError('Please select your grade');
       isValid = false;
     } else {
       setGradeError('');
@@ -100,18 +110,24 @@ export default function ProfSet_Details({ route }) {
         {ageError ? (<Text style={styles.error}>{ageError}</Text>) : null}
         <TextInput
           style={styles.input}
-          placeholder="Grade"
-          onChangeText={setGrade}
-          value={grade}
-        />
-        {gradeError ? (<Text style={styles.error}>{gradeError}</Text>) : null}
-        <TextInput
-          style={styles.input}
           placeholder="Major"
           onChangeText={setMajor}
           value={major}
         />
         {majorError ? (<Text style={styles.error}>{majorError}</Text>) : null}
+        <TouchableOpacity style={styles.input} onPress={() => setShowOptions(!showOptions)}>
+          <Text style={styles.inputText}>{selectedOption || 'Select a Grade'}</Text>
+        </TouchableOpacity>
+        {showOptions && (
+          <View style={styles.optionsContainer}>
+            {grades.map((grade) => (
+              <TouchableOpacity key={grade} style={styles.option} onPress={() => handleOptionPress(grade)}>
+                <Text>{grade}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        {gradeError ? (<Text style={styles.error}>{gradeError}</Text>) : null}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Back</Text>
@@ -178,8 +194,29 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ccc',
+    color: 'blue',
+    textDecorationLine: 'underline',
     textAlign: 'center',
     marginBottom: 20,
   },
+  optionsContainer: {
+    position: 'absolute',
+    flex: 1,
+    paddingBottom: 20,
+    borderWidth: 1,
+    borderColor: 'black',
+    padding: 10,
+    width: 200,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  option: {
+    paddingVertical: 5,
+  },
+  inputText: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
