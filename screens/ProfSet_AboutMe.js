@@ -6,7 +6,7 @@ export default function ProfSet_AboutMe({ route }) {
   const [aboutMe, setAboutMe] = useState('');
   const [aboutMeError, setAboutMeError] = useState('');
   const navigation = useNavigation();
-  const { firstName, lastName, email, password, age, grade, major } = route.params;
+  const { firstName, lastName, email, password, age, grade, major, image } = route.params;
 
   const handleNext = () => {
     let isValid = true;
