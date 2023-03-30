@@ -24,7 +24,7 @@ let interestIds = [];
 let profilePic = "placeholder"
 let interests = []
 
-export default class Profile extends React.Component{
+export default class ProfileOther extends React.Component{
   constructor(props) {
     super(props);
 
@@ -45,22 +45,10 @@ export default class Profile extends React.Component{
     }
   }
 
-  async componentWillUnmount(){
-    this.setState({userID:global.userID})
-  }
   async componentDidMount() {
-    this.setState({userID:global.userID})
-    let response;
-    console.log(global.userID)
-    // if(global.userID == ""){
-    //   response = await findOne("user", {"_id": {"$oid":"63eeac0a2e60152c75190171"}});
-    //   console.log(response)
-    // }
+    const {memberId} = this.props.route.params;
 
-
-      response = await findOne("user", {"_id": {"$oid":this.state.userID}});
-      console.log(response)
-
+    let response = await findOne("user", {"_id": {"$oid":memberId}});
 
     interestIds.length = 0;
 
@@ -84,44 +72,40 @@ export default class Profile extends React.Component{
           </View>
         </SafeAreaView>
       }
-        return (
-            <View style={styles.container}>
+      return (
+          <View style={styles.container}>
 
-              <ScrollView overScrollMode={"auto"}>
-                <TouchableOpacity style={styles.editBox} onPress={() => this.props.navigation.navigate('ProfileEditor')}>
-                  <Image source={require('../assets/profile_edit_icon.jpg')} style={styles.editPic}></Image>
-                  <Text style={styles.dmFont}>Edit Profile</Text>
+            <ScrollView overScrollMode={"auto"}>
+              <Image source={{uri:profilePic}}
+                     style={styles.profPic}></Image>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>{name}</Text>
+                <Text style={styles.bodyFont}>Age: {age}</Text>
+                <Text style={styles.bodyFont}>Grade: {grade}</Text>
+                <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+                <TouchableOpacity style={styles.dmBox}>
+                  <Image source={require('../assets/mail-icon.png')}
+                         style={styles.dmPic}></Image>
+                  <Text style={styles.dmFont}>Direct Message</Text>
                 </TouchableOpacity>
-                <Image source={{uri:profilePic}}
-                       style={styles.profPic}></Image>
+              </View>
 
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>{name}</Text>
-                  <Text style={styles.bodyFont}>Age: {age}</Text>
-                  <Text style={styles.bodyFont}>Grade: {grade}</Text>
-                  <Text style={styles.bodyFontBottom}>Major: {major}</Text>
-                  <TouchableOpacity style={styles.dmBox}>
-                    <Image source={require('../assets/mail-icon.png')}
-                           style={styles.dmPic}></Image>
-                    <Text style={styles.dmFont}>Direct Message</Text>
-                  </TouchableOpacity>
-                </View>
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>About Me:</Text>
+                <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
+              </View>
 
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>About Me:</Text>
-                  <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
-                </View>
-
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>Interests:</Text>
-                  {
-                    interests.map((item) => <Item item={item}/>)
-                  }
-                </View>
-              </ScrollView>
-              <StatusBar style='auto'/>
-            </View>
-        );
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>Interests:</Text>
+                {
+                  interests.map((item) => <Item item={item}/>)
+                }
+              </View>
+            </ScrollView>
+            <StatusBar style='auto'/>
+          </View>
+      );
     }
     const Item = ({item}) => (
         <TouchableOpacity style={styles.interestBox}>

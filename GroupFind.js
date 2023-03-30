@@ -7,10 +7,14 @@ import MemberList from "./screens/MemberList";
 import RSVPList from "./screens/RSVPList";
 import Start from "./modals/Event";
 import Profile from './screens/Profile'
+import ProfileEditor from "./screens/ProfileEditor";
+import ProfileOther from "./screens/ProfileOther";
 const Stack = createNativeStackNavigator();
 
 export default class GroupFind extends React.Component{
   render (){
+    //const {userID} = this.props.route.params
+    //console.log("1 " + this.props.route.params.userID)
     return(
           <Stack.Navigator>
             <Stack.Screen
@@ -30,14 +34,20 @@ export default class GroupFind extends React.Component{
                 name="Members_Page"
                 component={MemberList}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
-
+            <Stack.Screen
+                name="RSVP_List"
+                component={RSVPList}
+                options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
             <Stack.Screen
                 name="Member_Profile"
-                component={Profile}
+                component={ProfileOther}
+                options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
+            <Stack.Screen
+                name="ProfileEditor"
+                component={ProfileEditor}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
             <Stack.Screen name = "Start" component = {Start}/>
             <Stack.Screen name = "RSVP List" component = {RSVPList}/>
-
           </Stack.Navigator>
     );
   }

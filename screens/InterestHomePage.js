@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -10,13 +10,14 @@ import {
   ScrollView,
   ImageBackground,
   ActivityIndicator,
-  FlatList
+  FlatList, Alert, Pressable, Modal
 } from 'react-native';
 
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import {findOne, find, aggregation} from '../db.js'
+import {findOne, aggregation} from '../db.js'
+import Event from "../modals/Event";
 
 let image = "placeholder";
 let groupName = "";
@@ -30,6 +31,9 @@ let GROUPID;
 let eventNames = [];
 let eventDates = [];
 let eventTimes = [];
+let eventIDs = [];
+let eventLocations = [];
+let eventOrganizers = [];
 
 export default class Test extends React.Component{
   constructor(props) {
@@ -38,7 +42,14 @@ export default class Test extends React.Component{
     this.state = {
       data: [],
       isLoading: true,
-      numEvents:0
+      numEvents:0,
+      modalVisible: false,
+      eventName: "Event Name",
+      eventDate: "",
+      eventTime: "",
+      eventLocation: "",
+      eventOrganizer: "",
+      eventID:"",
     };
   }
 
@@ -88,9 +99,15 @@ export default class Test extends React.Component{
     eventNames.length = 0;
     eventDates.length = 0;
     eventTimes.length = 0;
+    eventIDs.length = 0;
+    eventLocations.length = 0;
+    eventOrganizers.length = 0;
 
     for(let i = 0; i < upcomingEvents.length; i++){
+      eventIDs.push(upcomingEvents[i]._id)
       eventNames.push(upcomingEvents[i].name);
+      eventLocations.push(upcomingEvents[i].location)
+      eventOrganizers.push(upcomingEvents[i].organizer)
       let date = upcomingEvents[i].date;
       let dateTime = new Date(0);
       dateTime.setSeconds(date);
@@ -130,6 +147,65 @@ export default class Test extends React.Component{
   }
 
   render (){
+    const {modalVisible} = this.state;
+    const handleRSVPListPress = () => {
+      this.setState({modalVisible: !modalVisible});
+      this.props.navigation.navigate('RSVP_List',{eventId: this.state.eventID})
+      //navigation.navigate('RSVP List');
+    };
+
+    const createTwoButtonAlert = () =>
+        Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
+          {
+            text: 'Yes',
+            //onPress: () => confirmRSVP
+          },
+          {
+            text: 'No',
+            //onPress: () => doSomething
+            style: 'cancel',
+          },
+        ]);
+    const EventModal = () => {
+      return(<Modal
+          animationType = "fade"
+          transparent = {true}
+          visible = {modalVisible}
+          onRequestClose = {() => {
+            Alert.alert('Modal has been closed.');
+            this.setState({modalVisible: !modalVisible});
+          }}>
+        <View style = {styles.modalWrapper}>
+          <View style = {styles.modalView}>
+            <Text style = {styles.modalText}>{this.state.eventName}</Text>
+            <View style = {{flexDirection: 'row', marginBottom: 20}}>
+              <Text style = {styles.modalLeftText}>Date: {this.state.eventDate}</Text>
+              <Text style = {styles.modalRightText}>Location: {this.state.eventLocation}</Text>
+            </View>
+            <View style = {{flexDirection: 'row', marginBotom: 20}}>
+              <Text style = {styles.modalLeftText}>Time: {this.state.eventTime}</Text>
+              <Text style = {styles.modalRightText}>Organizer: {this.state.eventOrganizer}</Text>
+            </View>
+            <View style = {{flexDirection: 'row', marginBottom: 20}}>
+              <Pressable style = {[styles.button, styles.buttonRSVP]}
+                         onPress = {createTwoButtonAlert}>
+                <Text style = {styles.textStyle}>RSVP</Text>
+              </Pressable>
+              <Pressable style = {[styles.button, styles.buttonViewPpl]}
+                         onPress = {handleRSVPListPress}>
+                <Text style = {styles.textStyle}>View People Attending</Text>
+              </Pressable>
+            </View>
+            <Pressable
+                style = {[styles.button, styles.buttonClose]}
+                onPress = {() => this.setState({modalVisible: !modalVisible})}>
+              <Text style = {styles.textStyle}>Hide</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>);
+    }
+
     const RenderedObject = () => {
       if (this.state.isLoading) {
         return <SafeAreaView style={styles.container}>
@@ -143,6 +219,7 @@ export default class Test extends React.Component{
         return(
             <SafeAreaView style={styles.container}>
               <ScrollView>
+                <EventModal></EventModal>
                 <Surface
                     elevation={20}
                     category="medium"
@@ -219,6 +296,7 @@ export default class Test extends React.Component{
         return(
             <SafeAreaView style={styles.container}>
               <ScrollView>
+                <EventModal></EventModal>
                 <Surface
                     elevation={20}
                     category="medium"
@@ -273,7 +351,7 @@ export default class Test extends React.Component{
                 >
                   <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
                   <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                    <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                    <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible, eventName:eventNames[0], eventDate:eventDates[0], eventTime:eventTimes[0], eventLocation:eventLocations[0], eventOrganizer:eventOrganizers[0],  eventID: eventIDs[0]})}>
                       <Surface
                           elevation={6}
                           category={"medium"}
@@ -305,6 +383,7 @@ export default class Test extends React.Component{
       return(
           <SafeAreaView style={styles.container}>
             <ScrollView>
+              <EventModal></EventModal>
               <Surface
                   elevation={20}
                   category="medium"
@@ -352,6 +431,7 @@ export default class Test extends React.Component{
                 </View>
               </Surface>
 
+
               <Surface
                   elevation={20}
                   category="medium"
@@ -359,7 +439,7 @@ export default class Test extends React.Component{
               >
                 <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
                 <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                  <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                  <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible, eventName:eventNames[0], eventDate:eventDates[0], eventTime:eventTimes[0], eventLocation:eventLocations[0], eventOrganizer:eventOrganizers[0], eventID: eventIDs[0]})}>
                     <Surface
                         elevation={6}
                         category={"medium"}
@@ -369,7 +449,7 @@ export default class Test extends React.Component{
                       <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
                     </Surface>
                   </TouchableOpacity>
-                  <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('Start')}>
+                  <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible,eventName:eventNames[1], eventDate:eventDates[1], eventTime:eventTimes[1], eventLocation:eventLocations[1], eventOrganizer:eventOrganizers[1], eventID: eventIDs[1]})}>
                     <Surface
                         elevation={6}
                         category={"medium"}
@@ -513,5 +593,83 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     paddingBottom:'2%',
     fontSize: RFPercentage(2)
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    verticalAlign: 'center',
+    margin: 0,
+    backgroundColor: 'white',
+    borderRadius: 0,
+    padding: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  buttonYes: {
+    backgroundColor: "#1eb76a",
+  },
+  buttonCancel: {
+    backgroundColor: "#b51f30",
+  },
+  buttonRSVP: {
+    backgroundColor: '#DA8E12',
+    justifyContent: 'flex-start',
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  buttonViewPpl: {
+    backgroundColor: '#DA8E12',
+    justifyContent: 'flex-end',
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalLeftText: {
+    flex: 1,
+    marginBottom: 15,
+    textAlign: 'left',
+    justifyContent: 'flex-start',
+  },
+  modalRightText: {
+    flex: 1,
+    marginBottom: 15,
+    textAlign: 'right',
+    justifyContent: 'flex-end',
+  },
 });

@@ -89,7 +89,7 @@ export default class InterestCategory extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
+    //paddingTop: StatusBar.currentHeight || 0,
     backgroundColor: '#344e71'
   },
   item: {
