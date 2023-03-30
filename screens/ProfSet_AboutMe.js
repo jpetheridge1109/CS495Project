@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_AboutMe({ route }) {
   const [aboutMe, setAboutMe] = useState('');
+  const [aboutMeError, setAboutMeError] = useState('');
   const navigation = useNavigation();
-  const { firstName, lastName, email, password, age, grade, major } = route.params;
+  const { firstName, lastName, email, password, age, grade, major, image } = route.params;
 
   const handleNext = () => {
-    Alert.alert('Are you sure you finished setting up your profile?','',
-      [
-        {
-          text: 'No',
-          onPress: () => console.log('No Pressed'),
-          style: 'cancel'
-        },
-        {
-          text: 'Yes',
-          onPress: () => navigation.navigate('Find a Group')
-          //Send all var
-        }
-      ],
-      { cancelable: false }
-    );
+    let isValid = true;
+
+    if(!aboutMe) {
+      setAboutMeError('Please input a description');
+      isValid = false;
+    } else {
+      setAboutMeError('');
+    }
+
+    if(isValid) {
+      Alert.alert('Are you sure you finished setting up your profile?','',
+        [
+          {
+            text: 'No',
+            onPress: () => console.log('No Pressed'),
+            style: 'cancel'
+          },
+          {
+            text: 'Yes',
+            onPress: () => navigation.navigate('Find a Group')
+            //Send all variables to DB here
+          }
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
   const handleBack = () => {
@@ -30,24 +42,27 @@ export default function ProfSet_AboutMe({ route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Profile Setup: About Me</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Tell us about yourself..."
-        multiline
-        onChangeText={setAboutMe}
-        value={aboutMe}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>Finish</Text>
-        </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Profile Setup: About Me</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Tell us about yourself..."
+          multiline
+          onChangeText={setAboutMe}
+          value={aboutMe}
+        />
+        {aboutMeError ? (<Text style={styles.error}>{aboutMeError}</Text>) : null}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Finish</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -88,6 +103,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
     fontWeight: 'bold',
   },
 });

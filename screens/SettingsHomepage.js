@@ -82,11 +82,11 @@ function Settings({ navigation }) {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Are you sure you want to log out?</Text>
               <View style={styles.modalButtonContainer}>
-                <TouchableOpacity style={[styles.modalButton, styles.modalConfirmButton]} onPress={() => handleLogOutConfirmation(true)}>
-                  <Text style={styles.modalButtonText}>Yes</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={[styles.modalButton, styles.modalCancelButton]} onPress={() => handleLogOutConfirmation(false)}>
                   <Text style={styles.modalButtonText}>No</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.modalConfirmButton]} onPress={() => handleLogOutConfirmation(true)}>
+                  <Text style={styles.modalButtonText}>Yes</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 10,
   },
   modalButtonText: {
     color: '#fff',
@@ -156,4 +156,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },  
 });
