@@ -24,7 +24,7 @@ let interestIds = [];
 let profilePic = "placeholder"
 let interests = []
 
-export default class InterestCategory extends React.Component{
+export default class Profile extends React.Component{
   constructor(props) {
     super(props);
 

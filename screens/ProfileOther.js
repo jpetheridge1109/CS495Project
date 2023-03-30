@@ -1,56 +1,122 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView, ActivityIndicator, FlatList
+} from 'react-native';
+import {find, findOne} from "../db";
+import React from "react";
 
-export default function ProfileOther() {
-  return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Image source={require('../assets/profile_picture_demo.jpg')} style={styles.profPic}></Image>
+/* NEXT STEPS:
+-Add settings button to top bar
+-Fix shadows
+*/
+let name = "";
+let age = "";
+let grade = "";
+let major = "";
+let aboutMe = "";
+let interestIds = [];
+let profilePic = "placeholder"
+let interests = []
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>Jacob Pearson</Text>
-          <Text style={styles.bodyFont}>Age: 21</Text>
-          <Text style={styles.bodyFont}>Grade: Junior</Text>
-          <Text style={styles.bodyFontBottom}>Major: Computer Science</Text>
-          <TouchableOpacity style={styles.dmBox}>
-            <Image source={require('../assets/mail-icon.png')} style={styles.dmPic}></Image>
-            <Text style={styles.dmFont}>Direct Message</Text>
-          </TouchableOpacity>
-        </View>
+export default class ProfileOther extends React.Component{
+  constructor(props) {
+    super(props);
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>About Me:</Text>
-          <Text style={styles.bodyFontBottom}>This is where the about section will go. Students can go into more detail about their interests here. The actual interests listed below are clickable, and will have functionality to go to interest pages.</Text>
-        </View>
+    this.state = {
+      data: [],
+      isLoading: true,
+      isDefault: true,
+      userID: global.userID
+    };
+  }
 
-        <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>Interests:</Text>
+  async getInterestInfo(interestIds){
+    let response;
+    interests.length = 0
+    for(let i = 0; i < interestIds.length; i++){
+      response = await findOne("group", {"_id": {"$oid":interestIds[i]}});
+      interests.push(response.document)
+    }
+  }
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Mountain Biking</Text>
-          </TouchableOpacity>
+  async componentDidMount() {
+    const {memberId} = this.props.route.params;
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Music</Text>
-          </TouchableOpacity>
+    let response = await findOne("user", {"_id": {"$oid":memberId}});
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Photography</Text>
-          </TouchableOpacity>
+    interestIds.length = 0;
 
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Video Games</Text>
-          </TouchableOpacity>
+    name = response.document.fname +" "+ response.document.lname;
+    age = response.document.age
+    grade = response.document.class
+    major = response.document.major
+    aboutMe = response.document.bio
+    interestIds = response.document.groups
+    profilePic = response.document.img
+    await this.getInterestInfo(interestIds);
 
-        </View>
-      </ScrollView>
-      <StatusBar style='auto'/>
-    </View>
-  );
+    this.setState({isLoading:false})
+  }
+  render(){
+    const RenderedObject = () => {
+      if (this.state.isLoading) {
+        return <SafeAreaView style={styles.container}>
+          <View>
+            <ActivityIndicator size='large' color="#00ff00"/>
+          </View>
+        </SafeAreaView>
+      }
+      return (
+          <View style={styles.container}>
+
+            <ScrollView overScrollMode={"auto"}>
+              <Image source={{uri:profilePic}}
+                     style={styles.profPic}></Image>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>{name}</Text>
+                <Text style={styles.bodyFont}>Age: {age}</Text>
+                <Text style={styles.bodyFont}>Grade: {grade}</Text>
+                <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+                <TouchableOpacity style={styles.dmBox}>
+                  <Image source={require('../assets/mail-icon.png')}
+                         style={styles.dmPic}></Image>
+                  <Text style={styles.dmFont}>Direct Message</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>About Me:</Text>
+                <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
+              </View>
+
+              <View style={styles.infoBackground}>
+                <Text style={styles.nameFont}>Interests:</Text>
+                {
+                  interests.map((item) => <Item item={item}/>)
+                }
+              </View>
+            </ScrollView>
+            <StatusBar style='auto'/>
+          </View>
+      );
+    }
+    const Item = ({item}) => (
+        <TouchableOpacity style={styles.interestBox}>
+          <Image source={{uri:item.img}} style={styles.interestPic}></Image>
+          <Text style={styles.interestFont}>{item.name}</Text>
+        </TouchableOpacity>
+    );
+    return(
+        <RenderedObject/>
+    )
+  }
 }
 
 //Code that is for the container and for formatting
@@ -58,10 +124,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#344e71',
-    paddingTop: StatusBar.currentHeight,
-    //alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
   },
 
   //Styles for the top bar
@@ -83,14 +146,14 @@ const styles = StyleSheet.create({
 
   //Styles for profile page information
   infoBackground: {
-    backgroundColor: '#ffffff', //'#e6e6e6',
+    backgroundColor: '#fff',
     marginVertical: 5,
     marginHorizontal: 5,
     borderRadius: 15,
     alignItems: 'center'
   },
   dmBox: {
-    backgroundColor: '#e6e6e6', //'#cccccc',
+    backgroundColor: '#cccccc',
     marginBottom: 10,
     marginHorizontal: 5,
     borderRadius: 15,
@@ -100,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   interestBox: {
-    backgroundColor: '#e6e6e6', //'#cccccc',
+    backgroundColor: '#fff',
     marginBottom: 10,
     marginHorizontal: 5,
     borderRadius: 15,
@@ -121,8 +184,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dmPic: {
-    //borderRadius: 10,
-    //alignSelf:'center',
     width: 50,
     aspectRatio: 1,
     borderWidth: 5,
@@ -130,8 +191,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginLeft: 10,
   },
+  editPic: {
+    width: 50,
+    aspectRatio: 1,
+    borderRadius:1000,
+    borderWidth: 5,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginLeft: 10,
+  },
   interestPic: {
-    //height: 50,
     width: 70,
     aspectRatio: 1,
     flexDirection: 'column',
@@ -168,5 +237,30 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  editBox: {
+    backgroundColor: '#ffffff', //'#cccccc',
+    marginTop: 10,
+    marginBottom: 10,
+    marginHorizontal: 5,
+    borderRadius: 15,
+    //width: '95%',
+    height: 50,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+
+  //Shadows (not working)
+  //shadows for iOS
+  shadow: {
+    shadowColor: 'black',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  //shadows for Android
+  elevation: {
+    elevation: 20,
+    shadowColor: 'black',
   },
 });

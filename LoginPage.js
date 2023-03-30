@@ -12,10 +12,10 @@ const Stack = createStackNavigator();
 export default function LoginPage() {
   return (
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginHome} />
-        <Stack.Screen name="Name" component={ProfSetName} />
-        <Stack.Screen name="Details" component={ProfSetDetails} />
-        <Stack.Screen name="About Me" component={ProfSetAboutMe} />
+        <Stack.Screen name="Login" component={LoginHome} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="Name" component={ProfSetName} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="Details" component={ProfSetDetails} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="About Me" component={ProfSetAboutMe} options = {{ headerTransparent: true, headerTitle:''}}/>
       </Stack.Navigator>
   );
 }
