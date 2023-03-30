@@ -83,7 +83,12 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page">
+        <Drawer.Navigator initialRouteName="Login Page" screenOptions={{
+          drawerLabelStyle: {
+            color: "blue",
+            fontWeight: 'bold'
+          },
+          }}>
             <Drawer.Screen name="Login Page" component={LoginPage} 
               options={{
                 drawerItemStyle: { height: 0 }
@@ -95,6 +100,7 @@ export default () => {
                   style={{ width: 50, height: 50 }}
                   source={require('./assets/frisbee.png')}
                 />
+                
                 }}/>
             <Drawer.Screen name="Find a Group" component={GroupFind}
               options={{
