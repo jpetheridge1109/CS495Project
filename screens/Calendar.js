@@ -7,8 +7,7 @@ const timeToString = (time) => {
   return date.toISOString().split('T')[0];
 };
 
-export default class MemberList extends React.Component {
-  render() {
+export default function MemberList (){
     const [items, setItems] = useState({});
   
     const loadItems = (day) => {
@@ -49,5 +48,4 @@ export default class MemberList extends React.Component {
         </Agenda>
       </View>
     )
-  }
 }

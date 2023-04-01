@@ -110,43 +110,26 @@ const DATA = [
 ];
 
 
-
-const updateSearch = (search) => {
-  this.setState({ search });
-};
-
-export default class InterestSearch extends React.Component{
-  state = {
-    search: '',
-  };
-
-  updateSearch = (search) => {
-    this.setState({ search });
-  };
-  render (){
-    //const {userID} = this.props.route.params
-   // console.log("Hello" + userID);
-    const { search } = this.state;
-    const Item = ({item}) => (
-        <TouchableOpacity style={[styles.item,{backgroundColor: item.color}]} onPress={() => this.props.navigation.navigate('Specific_Interests',{categoryName:item.name})}>
-          <Text style={styles.text}>{item.name}</Text>
-          <Image
-              source= {item.img} style = {styles.image}/>
-        </TouchableOpacity>
-    );
-    return(
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.categories} >Categories</Text>
-          <FlatList
-              columnWrapperStyle={{justifyContent: 'space-evenly'}}
-              data={DATA}
-              numColumns={2}
-              renderItem={({item}) => <Item item={item}/>}
-              keyExtractor={item => item.id}
-          />
-        </SafeAreaView>
-    );
-  }
+export default function InterestSearch({navigation}){
+  const Item = ({item}) => (
+      <TouchableOpacity style={[styles.item,{backgroundColor: item.color}]} onPress={() => navigation.navigate('Specific_Interests',{categoryName:item.name})}>
+        <Text style={styles.text}>{item.name}</Text>
+        <Image
+            source= {item.img} style = {styles.image}/>
+      </TouchableOpacity>
+  );
+  return(
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.categories} >Categories</Text>
+        <FlatList
+            columnWrapperStyle={{justifyContent: 'space-evenly'}}
+            data={DATA}
+            numColumns={2}
+            renderItem={({item}) => <Item item={item}/>}
+            keyExtractor={item => item.id}
+        />
+      </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({

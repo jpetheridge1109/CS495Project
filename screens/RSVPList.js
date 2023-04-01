@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -16,16 +16,10 @@ import {RFPercentage} from "react-native-responsive-fontsize";
 import {findOne} from "../db";
 
 let DATA = [];
-export default class RSVPList extends React.Component{
-  constructor(props) {
-    super(props);
+export default function RSVPList({route, navigation}){
+  const [isLoading, setIsLoading] = useState(true);
 
-    this.state = {
-      data: [],
-      isLoading: true,
-    };
-  }
-  async getMemberInfo(membersArray){
+  const getMemberInfo = async (membersArray) => {
     let response;
     DATA.length = 0;
     for(let i = 0; i < membersArray.length; i++){
@@ -34,63 +28,64 @@ export default class RSVPList extends React.Component{
     }
   }
 
+  useEffect(() => {
+    const eventId = route.params.eventId
+    let response;
+    let memberIDs;
+    (async () => {
+      response = await findOne("event", {"_id": {"$oid":eventId}});
+      memberIDs = response.document.RSVPs;
+      await getMemberInfo(memberIDs)
+      setIsLoading(false);      //update screen after data retrieval
+    })();
+  });
 
-  async componentDidMount() {
-    this.setState({isLoading: true});      //update screen after data retrieval
-    const {eventId} = this.props.route.params
-    const response = await findOne("event", {"_id": {"$oid":eventId}});
-    let memberIDs = response.document.RSVPs;
-    await this.getMemberInfo(memberIDs)
-    this.setState({isLoading: false});      //update screen after data retrieval
-  }
-  render (){
-    const RenderedObject = () => {
-      if (this.state.isLoading) {
-        return <SafeAreaView style={styles.container}>
-          <Text style={styles.categories}>Members</Text>
-          <View>
-            <ActivityIndicator  size='large' color="#00ff00" />
-          </View>
-        </SafeAreaView>
-      }
-
-      return(
-          <SafeAreaView style={styles.container}>
-            <Text style={styles.categories}>Members</Text>
-            <FlatList
-                data={DATA}
-                renderItem={({item}) => <Item item={item}/>}
-                keyExtractor={item => item.id}
-            />
-          </SafeAreaView>
-      )
+  const RenderedObject = () => {
+    if (isLoading) {
+      return <SafeAreaView style={styles.container}>
+        <Text style={styles.categories}>Members</Text>
+        <View>
+          <ActivityIndicator  size='large' color="#00ff00" />
+        </View>
+      </SafeAreaView>
     }
 
-    const Item = ({item}) => (
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: item._id, isDefault:false})}>
-          <Surface
-              elevation={20}
-              category="medium"
-              style={{ alignSelf: 'center', width: '80%', aspectRatio: 4, marginBottom: 20, borderRadius: 10}}
-          >
-            <View style={{flex: 1, flexDirection: "row"}}>
-              <View style={{flex: 1, justifyContent:'center'}}>
-                <Image
-                    source= {{uri:item.img}} style={styles.avatars}/>
-              </View>
-              <View style={{flex: 3, justifyContent:'center'}}>
-                <Text style={styles.groupNameText}>{item.fname} {item.lname}</Text>
-              </View>
-            </View>
-          </Surface>
-        </TouchableOpacity>
-    );
-
-
-    return (
-        <RenderedObject/>
+    return(
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.categories}>Members</Text>
+          <FlatList
+              data={DATA}
+              renderItem={({item}) => <Item item={item}/>}
+              keyExtractor={item => item.id}
+          />
+        </SafeAreaView>
     )
   }
+
+  const Item = ({item}) => (
+      <TouchableOpacity onPress={() => navigation.navigate('Member_Profile', {memberId: item._id, isDefault:false})}>
+        <Surface
+            elevation={20}
+            category="medium"
+            style={{ alignSelf: 'center', width: '80%', aspectRatio: 4, marginBottom: 20, borderRadius: 10}}
+        >
+          <View style={{flex: 1, flexDirection: "row"}}>
+            <View style={{flex: 1, justifyContent:'center'}}>
+              <Image
+                  source= {{uri:item.img}} style={styles.avatars}/>
+            </View>
+            <View style={{flex: 3, justifyContent:'center'}}>
+              <Text style={styles.groupNameText}>{item.fname} {item.lname}</Text>
+            </View>
+          </View>
+        </Surface>
+      </TouchableOpacity>
+  );
+
+
+  return (
+      <RenderedObject/>
+  )
 }
 
 const styles = StyleSheet.create({

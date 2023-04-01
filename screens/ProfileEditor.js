@@ -61,10 +61,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#344e71',
-    paddingTop: StatusBar.currentHeight,
     //alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
   },
 
   //Styles for the top bar

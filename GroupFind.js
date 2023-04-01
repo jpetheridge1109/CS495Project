@@ -11,10 +11,7 @@ import ProfileEditor from "./screens/ProfileEditor";
 import ProfileOther from "./screens/ProfileOther";
 const Stack = createNativeStackNavigator();
 
-export default class GroupFind extends React.Component{
-  render (){
-    //const {userID} = this.props.route.params
-    //console.log("1 " + this.props.route.params.userID)
+export default function GroupFind (){
     return(
           <Stack.Navigator>
             <Stack.Screen
@@ -50,5 +47,4 @@ export default class GroupFind extends React.Component{
             <Stack.Screen name = "RSVP List" component = {RSVPList}/>
           </Stack.Navigator>
     );
-  }
 }

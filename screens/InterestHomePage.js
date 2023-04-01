@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -16,7 +16,7 @@ import {
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import {findOne, aggregation} from '../db.js'
+import {findOne, aggregation, find} from '../db.js'
 import Event from "../modals/Event";
 
 let image = "placeholder";
@@ -35,25 +35,18 @@ let eventIDs = [];
 let eventLocations = [];
 let eventOrganizers = [];
 
-export default class Test extends React.Component{
-  constructor(props) {
-    super(props);
+export default function InterestHomePage({route, navigation}){
+  const [isLoading, setIsLoading] = useState(true);
+  const [numEvents, setNumEvents] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [eventName, setEventName] = useState("Event Name");
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
+  const [eventOrganizer, setEventOrganizer] = useState("");
+  const [eventID, setEventID] = useState("");
 
-    this.state = {
-      data: [],
-      isLoading: true,
-      numEvents:0,
-      modalVisible: false,
-      eventName: "Event Name",
-      eventDate: "",
-      eventTime: "",
-      eventLocation: "",
-      eventOrganizer: "",
-      eventID:"",
-    };
-  }
-
-  async getMemberPreviewInfo(membersArray){
+  const getMemberPreviewInfo = async (membersArray) => {
     let response;
     memberNames.length = 0;
     memberImages.length = 0;
@@ -72,11 +65,11 @@ export default class Test extends React.Component{
     console.log(membersArray.length);
   }
 
-  async getUpcomingEventInfo(groupId) {
-    const today = this.formatDate(new Date())
+  const getUpcomingEventInfo = async (groupId) => {
+    const today = formatDate(new Date())
     let tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow = this.formatDate(tomorrow)
+    tomorrow = formatDate(tomorrow)
     let epochTomorrow = (new Date(tomorrow.toString()).getTime() / 1000)
     let epochToday = (new Date(today.toString()).getTime() / 1000)
     let response = await aggregation("event", [
@@ -111,275 +104,105 @@ export default class Test extends React.Component{
       let date = upcomingEvents[i].date;
       let dateTime = new Date(0);
       dateTime.setSeconds(date);
-      eventDates.push(this.formatDate(dateTime));
-      eventTimes.push(this.formatTime(dateTime));
+      eventDates.push(formatDate(dateTime));
+      eventTimes.push(formatTime(dateTime));
     }
 
     if(eventDates.length > 0){
-      this.setState({numEvents:eventDates.length})
+      setNumEvents(eventDates.length);
+      //this.setState({numEvents:eventDates.length})
     }
   }
 
-  formatDate(date){
-    return date.toLocaleDateString('en-US')
-  }
+  useEffect(() => {
+    (async () => {
+      console.log("hello")
+      const groupId = route.params.groupId
+      console.log(groupId)
+      GROUPID = groupId;
+      const response = await findOne("group", {"_id": {"$oid":groupId}});
+      image = response.document.img;
+      groupName = response.document.name;
+      description = response.document.description
+      createdDate = response.document.created_date
+      memberCount = response.document.members.length
+      memberIDs = response.document.members
+      await getMemberPreviewInfo(memberIDs)
+      console.log(await getUpcomingEventInfo(groupId));
+      //this.setState({isLoading: false});  //update screen after data retrieval
+      setIsLoading(false) //update screen after data retrieval
+    })();
+  });
 
-  formatTime(date){
-    return date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})
-  }
+  const handleRSVPListPress = () => {
+    setModalVisible(!modalVisible)
+    navigation.navigate('RSVP_List',{eventId: eventID})
+    //navigation.navigate('RSVP List');
+  };
 
-  async componentDidMount() {
-    this.setState({isLoading: true});  //update screen after data retrieval
-    const {groupId} = this.props.route.params
-    console.log(groupId)
-    GROUPID = groupId;
-    const response = await findOne("group", {"_id": {"$oid":groupId}});
-    image = response.document.img;
-    groupName = response.document.name;
-    description = response.document.description
-    createdDate = response.document.created_date
-    memberCount = response.document.members.length
-    console.log(memberCount)
-    memberIDs = response.document.members
-    await this.getMemberPreviewInfo(memberIDs)
-    console.log(await this.getUpcomingEventInfo(groupId));
-    this.setState({isLoading: false});  //update screen after data retrieval
-  }
+  const createTwoButtonAlert = () =>
+      Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
+        {
+          text: 'Yes',
+          //onPress: () => confirmRSVP
+        },
+        {
+          text: 'No',
+          //onPress: () => doSomething
+          style: 'cancel',
+        },
+      ]);
 
-  render (){
-    const {modalVisible} = this.state;
-    const handleRSVPListPress = () => {
-      this.setState({modalVisible: !modalVisible});
-      this.props.navigation.navigate('RSVP_List',{eventId: this.state.eventID})
-      //navigation.navigate('RSVP List');
-    };
-
-    const createTwoButtonAlert = () =>
-        Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
-          {
-            text: 'Yes',
-            //onPress: () => confirmRSVP
-          },
-          {
-            text: 'No',
-            //onPress: () => doSomething
-            style: 'cancel',
-          },
-        ]);
-    const EventModal = () => {
-      return(<Modal
-          animationType = "fade"
-          transparent = {true}
-          visible = {modalVisible}
-          onRequestClose = {() => {
-            Alert.alert('Modal has been closed.');
-            this.setState({modalVisible: !modalVisible});
-          }}>
-        <View style = {styles.modalWrapper}>
-          <View style = {styles.modalView}>
-            <Text style = {styles.modalText}>{this.state.eventName}</Text>
-            <View style = {{flexDirection: 'row', marginBottom: 20}}>
-              <Text style = {styles.modalLeftText}>Date: {this.state.eventDate}</Text>
-              <Text style = {styles.modalRightText}>Location: {this.state.eventLocation}</Text>
-            </View>
-            <View style = {{flexDirection: 'row', marginBotom: 20}}>
-              <Text style = {styles.modalLeftText}>Time: {this.state.eventTime}</Text>
-              <Text style = {styles.modalRightText}>Organizer: {this.state.eventOrganizer}</Text>
-            </View>
-            <View style = {{flexDirection: 'row', marginBottom: 20}}>
-              <Pressable style = {[styles.button, styles.buttonRSVP]}
-                         onPress = {createTwoButtonAlert}>
-                <Text style = {styles.textStyle}>RSVP</Text>
-              </Pressable>
-              <Pressable style = {[styles.button, styles.buttonViewPpl]}
-                         onPress = {handleRSVPListPress}>
-                <Text style = {styles.textStyle}>View People Attending</Text>
-              </Pressable>
-            </View>
-            <Pressable
-                style = {[styles.button, styles.buttonClose]}
-                onPress = {() => this.setState({modalVisible: !modalVisible})}>
-              <Text style = {styles.textStyle}>Hide</Text>
+  const EventModal = () => {
+    return(<Modal
+        animationType = "fade"
+        transparent = {true}
+        visible = {modalVisible}
+        onRequestClose = {() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+      <View style = {styles.modalWrapper}>
+        <View style = {styles.modalView}>
+          <Text style = {styles.modalText}>{eventName}</Text>
+          <View style = {{flexDirection: 'row', marginBottom: 20}}>
+            <Text style = {styles.modalLeftText}>Date: {eventDate}</Text>
+            <Text style = {styles.modalRightText}>Location: {eventLocation}</Text>
+          </View>
+          <View style = {{flexDirection: 'row', marginBotom: 20}}>
+            <Text style = {styles.modalLeftText}>Time: {eventTime}</Text>
+            <Text style = {styles.modalRightText}>Organizer: {eventOrganizer}</Text>
+          </View>
+          <View style = {{flexDirection: 'row', marginBottom: 20}}>
+            <Pressable style = {[styles.button, styles.buttonRSVP]}
+                       onPress = {createTwoButtonAlert}>
+              <Text style = {styles.textStyle}>RSVP</Text>
+            </Pressable>
+            <Pressable style = {[styles.button, styles.buttonViewPpl]}
+                       onPress = {handleRSVPListPress}>
+              <Text style = {styles.textStyle}>View People Attending</Text>
             </Pressable>
           </View>
+          <Pressable
+              style = {[styles.button, styles.buttonClose]}
+              onPress = {() => setModalVisible(!modalVisible)}>
+            <Text style = {styles.textStyle}>Hide</Text>
+          </Pressable>
         </View>
-      </Modal>);
+      </View>
+    </Modal>);
+  }
+
+  const RenderedObject = () => {
+    if (isLoading) {
+      return <SafeAreaView style={styles.container}>
+        <View>
+          <ActivityIndicator  size='large' color="#00ff00" />
+        </View>
+      </SafeAreaView>
     }
 
-    const RenderedObject = () => {
-      if (this.state.isLoading) {
-        return <SafeAreaView style={styles.container}>
-          <View>
-            <ActivityIndicator  size='large' color="#00ff00" />
-          </View>
-        </SafeAreaView>
-      }
-
-      else if(this.state.numEvents === 0){
-        return(
-            <SafeAreaView style={styles.container}>
-              <ScrollView>
-                <EventModal></EventModal>
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Image
-                      source = {{uri:image}}
-                      style = {styles.groupPic}/>
-                  <Text style = {styles.text}>{groupName}</Text>
-                  <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-                  <Text style = {styles.description}>{description}</Text>
-                </Surface>
-
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
-                  <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
-                        <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[0]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[1], isDefault:false})}>
-                        <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[1]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
-                        <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[2]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
-                        <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>View All</Text>
-                    </View>
-                  </View>
-                </Surface>
-
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
-                  <Text style={{textAlign: 'center', paddingTop: '3%', paddingBottom:'1%', fontSize: RFPercentage(2)}}>No Events</Text>
-                </Surface>
-                <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-                  <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                    <Button  buttonStyle={{
-                      backgroundColor: 'rgba(111, 202, 186, 1)',
-                      borderRadius: 5,
-                      width: '20%',
-                      alignSelf:'center',
-                      justifySelf: 'center'
-                    }}>Join</Button>
-                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
-                  </ImageBackground>
-                </View>
-              </ScrollView>
-            </SafeAreaView>
-        );
-      }
-
-      else if(this.state.numEvents === 1){
-        return(
-            <SafeAreaView style={styles.container}>
-              <ScrollView>
-                <EventModal></EventModal>
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Image
-                      source = {{uri:image}}
-                      style = {styles.groupPic}/>
-                  <Text style = {styles.text}>{groupName}</Text>
-                  <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-                  <Text style = {styles.description}>{description}</Text>
-                </Surface>
-
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
-                  <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[0], isDefault:false})}>
-                        <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[0]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
-                        <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[1]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
-                        <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>{memberNames[2]}</Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                      <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
-                        <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                      </TouchableOpacity>
-                      <Text style = {styles.memberName}>View All</Text>
-                    </View>
-                  </View>
-                </Surface>
-
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-                >
-                  <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
-                  <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                    <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible, eventName:eventNames[0], eventDate:eventDates[0], eventTime:eventTimes[0], eventLocation:eventLocations[0], eventOrganizer:eventOrganizers[0],  eventID: eventIDs[0]})}>
-                      <Surface
-                          elevation={6}
-                          category={"medium"}
-                          style={styles.eventTile}
-                      >
-                        <Text style = {styles.eventName}>{eventNames[0]}</Text>
-                        <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
-                      </Surface>
-                    </TouchableOpacity>
-                  </View>
-                </Surface>
-                <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-                  <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                    <Button  buttonStyle={{
-                      backgroundColor: 'rgba(111, 202, 186, 1)',
-                      borderRadius: 5,
-                      width: '20%',
-                      alignSelf:'center',
-                      justifySelf: 'center'
-                    }}>Join</Button>
-                    <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
-                  </ImageBackground>
-                </View>
-              </ScrollView>
-            </SafeAreaView>
-        );
-      }
-
+    else if(numEvents === 0){
       return(
           <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -405,25 +228,25 @@ export default class Test extends React.Component{
                 <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
                 <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
                       <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[0]}</Text>
                   </View>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[1], isDefault:false})}>
                       <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[1]}</Text>
                   </View>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Member_Profile', {memberId: memberIDs[2], isDefault:false})}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
                       <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>{memberNames[2]}</Text>
                   </View>
                   <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => this.props.navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
                       <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
                     </TouchableOpacity>
                     <Text style = {styles.memberName}>View All</Text>
@@ -431,59 +254,14 @@ export default class Test extends React.Component{
                 </View>
               </Surface>
 
-
               <Surface
                   elevation={20}
                   category="medium"
                   style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
               >
                 <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
-                <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
-                  <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible, eventName:eventNames[0], eventDate:eventDates[0], eventTime:eventTimes[0], eventLocation:eventLocations[0], eventOrganizer:eventOrganizers[0], eventID: eventIDs[0]})}>
-                    <Surface
-                        elevation={6}
-                        category={"medium"}
-                        style={styles.eventTile}
-                    >
-                      <Text style = {styles.eventName}>{eventNames[0]}</Text>
-                      <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
-                    </Surface>
-                  </TouchableOpacity>
-                  <TouchableOpacity style = {{flex:1}} onPress={() => this.setState({modalVisible: !modalVisible,eventName:eventNames[1], eventDate:eventDates[1], eventTime:eventTimes[1], eventLocation:eventLocations[1], eventOrganizer:eventOrganizers[1], eventID: eventIDs[1]})}>
-                    <Surface
-                        elevation={6}
-                        category={"medium"}
-                        style={styles.eventTile}
-                    >
-                      <Text style = {styles.eventName}>{eventNames[1]}</Text>
-                      <Text style = {styles.eventDetails}>{eventDates[1]} at {eventTimes[1]}</Text>
-                    </Surface>
-                  </TouchableOpacity>
-                </View>
+                <Text style={{textAlign: 'center', paddingTop: '3%', paddingBottom:'1%', fontSize: RFPercentage(2)}}>No Events</Text>
               </Surface>
-              <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
-                <TouchableOpacity style = {{flex:1}}  onPress={() => this.props.navigation.navigate('groupChat')}>
-                  <Surface
-                      elevation={20}
-                      category="medium"
-                      style={styles.buttonTile}
-                  >
-                    <Image source = {require('../assets/chat.png')} style = {styles.buttonImage}/>
-                    <Text style = {styles.memberName}>Chat</Text>
-                  </Surface>
-                </TouchableOpacity>
-                <TouchableOpacity style = {{flex:1}} onPress={() => this.props.navigation.navigate('groupCalendar')}>
-                  <Surface
-                      elevation={20}
-                      category="medium"
-                      style={styles.buttonTile}
-                  >
-                    <Image source = {require('../assets/calendar.png')} style = {styles.buttonImage}/>
-                    <Text style = {styles.memberName}>Calendar</Text>
-                  </Surface>
-                </TouchableOpacity>
-              </View>
-
               <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
                 <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
                   <Button  buttonStyle={{
@@ -500,8 +278,246 @@ export default class Test extends React.Component{
           </SafeAreaView>
       );
     }
-    return(<RenderedObject/>)
+
+    else if(numEvents === 1){
+      return(
+          <SafeAreaView style={styles.container}>
+            <ScrollView>
+              <EventModal></EventModal>
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+              >
+                <Image
+                    source = {{uri:image}}
+                    style = {styles.groupPic}/>
+                <Text style = {styles.text}>{groupName}</Text>
+                <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+                <Text style = {styles.description}>{description}</Text>
+              </Surface>
+
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+              >
+                <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+                <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[0], isDefault:false})}>
+                      <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[0]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
+                      <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[1]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
+                      <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>{memberNames[2]}</Text>
+                  </View>
+                  <View style = {{flex:1}}>
+                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                      <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                    </TouchableOpacity>
+                    <Text style = {styles.memberName}>View All</Text>
+                  </View>
+                </View>
+              </Surface>
+
+              <Surface
+                  elevation={20}
+                  category="medium"
+                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+              >
+                <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
+                <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
+                  <TouchableOpacity style = {{flex:1}} onPress={() => {
+                    setModalVisible(!modalVisible)
+                    setEventName(eventNames[0])
+                    setEventDate(eventDates[0]);
+                    setEventTime(eventTimes[0])
+                    setEventLocation(eventLocations[0])
+                    setEventOrganizer(eventOrganizers[0])
+                    setEventID(eventIDs[0])
+                  }
+                  }>
+                    <Surface
+                        elevation={6}
+                        category={"medium"}
+                        style={styles.eventTile}
+                    >
+                      <Text style = {styles.eventName}>{eventNames[0]}</Text>
+                      <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
+                    </Surface>
+                  </TouchableOpacity>
+                </View>
+              </Surface>
+              <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+                <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+                  <Button  buttonStyle={{
+                    backgroundColor: 'rgba(111, 202, 186, 1)',
+                    borderRadius: 5,
+                    width: '20%',
+                    alignSelf:'center',
+                    justifySelf: 'center'
+                  }}>Join</Button>
+                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
+                </ImageBackground>
+              </View>
+            </ScrollView>
+          </SafeAreaView>
+      );
+    }
+
+    return(
+        <SafeAreaView style={styles.container}>
+          <ScrollView>
+            <EventModal></EventModal>
+            <Surface
+                elevation={20}
+                category="medium"
+                style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+            >
+              <Image
+                  source = {{uri:image}}
+                  style = {styles.groupPic}/>
+              <Text style = {styles.text}>{groupName}</Text>
+              <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+              <Text style = {styles.description}>{description}</Text>
+            </Surface>
+
+            <Surface
+                elevation={20}
+                category="medium"
+                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+            >
+              <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+              <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+                <View style = {{flex:1}}>
+                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
+                    <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                  </TouchableOpacity>
+                  <Text style = {styles.memberName}>{memberNames[0]}</Text>
+                </View>
+                <View style = {{flex:1}}>
+                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
+                    <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                  </TouchableOpacity>
+                  <Text style = {styles.memberName}>{memberNames[1]}</Text>
+                </View>
+                <View style = {{flex:1}}>
+                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[2], isDefault:false})}>
+                    <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                  </TouchableOpacity>
+                  <Text style = {styles.memberName}>{memberNames[2]}</Text>
+                </View>
+                <View style = {{flex:1}}>
+                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                    <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                  </TouchableOpacity>
+                  <Text style = {styles.memberName}>View All</Text>
+                </View>
+              </View>
+            </Surface>
+
+
+            <Surface
+                elevation={20}
+                category="medium"
+                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+            >
+              <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
+              <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
+                <TouchableOpacity style = {{flex:1}} onPress={() => {
+                  setModalVisible(!modalVisible)
+                }
+                }>
+                  <Surface
+                      elevation={6}
+                      category={"medium"}
+                      style={styles.eventTile}
+                  >
+                    <Text style = {styles.eventName}>{eventNames[0]}</Text>
+                    <Text style = {styles.eventDetails}>{eventDates[0]} at {eventTimes[0]}</Text>
+                  </Surface>
+                </TouchableOpacity>
+                <TouchableOpacity style = {{flex:1}} onPress={() => {
+                  setModalVisible(!modalVisible)
+                  setEventName(eventNames[1])
+                  setEventDate(eventDates[1]);
+                  setEventTime(eventTimes[1])
+                  setEventLocation(eventLocations[1])
+                  setEventOrganizer(eventOrganizers[1])
+                  setEventID(eventIDs[0])
+                }
+                }>
+                  <Surface
+                      elevation={6}
+                      category={"medium"}
+                      style={styles.eventTile}
+                  >
+                    <Text style = {styles.eventName}>{eventNames[1]}</Text>
+                    <Text style = {styles.eventDetails}>{eventDates[1]} at {eventTimes[1]}</Text>
+                  </Surface>
+                </TouchableOpacity>
+              </View>
+            </Surface>
+            <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
+              <TouchableOpacity style = {{flex:1}}  onPress={() => navigation.navigate('groupChat')}>
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={styles.buttonTile}
+                >
+                  <Image source = {require('../assets/chat.png')} style = {styles.buttonImage}/>
+                  <Text style = {styles.memberName}>Chat</Text>
+                </Surface>
+              </TouchableOpacity>
+              <TouchableOpacity style = {{flex:1}} onPress={() => navigation.navigate('groupCalendar')}>
+                <Surface
+                    elevation={20}
+                    category="medium"
+                    style={styles.buttonTile}
+                >
+                  <Image source = {require('../assets/calendar.png')} style = {styles.buttonImage}/>
+                  <Text style = {styles.memberName}>Calendar</Text>
+                </Surface>
+              </TouchableOpacity>
+            </View>
+
+            <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+              <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+                <Button  buttonStyle={{
+                  backgroundColor: 'rgba(111, 202, 186, 1)',
+                  borderRadius: 5,
+                  width: '20%',
+                  alignSelf:'center',
+                  justifySelf: 'center'
+                }}>Join</Button>
+                <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
+              </ImageBackground>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+    );
   }
+  return(<RenderedObject/>)
+}
+
+
+function formatDate(date){
+  return date.toLocaleDateString('en-US')
+}
+
+function formatTime(date){
+  return date.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})
 }
 
 const styles = StyleSheet.create({
