@@ -87,6 +87,8 @@ export default () => {
             <Drawer.Screen name="Login Page" component={LoginPage} 
               options={{
                 drawerItemStyle: { height: 0 },
+                headerTransparent: true,
+                headerTitle:''
               }}/>
 
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
@@ -111,7 +113,23 @@ export default () => {
                   source={require('./assets/magnifying.png')}
                 />
                 }}/>
-            <Drawer.Screen name="Profile" component={Profile}
+            <Drawer.Screen name="Chat" component={NavigationStack}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/chat_drawer.png')}
+                  />
+                  }}/>
+            <Drawer.Screen name="Calendar" component={Calendar}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/calendar_drawer.png')}
+                  />
+                  }}/>
+            <Drawer.Screen name="Profile" component={ProfileFind}
                 options={{
                   drawerIcon: () => 
                   <Image
@@ -135,22 +153,6 @@ export default () => {
                     source={require('./assets/settings.png')}
                   />
                   }} />
-            <Drawer.Screen name="Chat" component={NavigationStack}
-                options={{
-                  drawerIcon: () => 
-                  <Image
-                    style={{ width: 50, height: 50 }}
-                    source={require('./assets/chat_drawer.png')}
-                  />
-                  }}/>
-            <Drawer.Screen name="Calendar" component={Calendar}
-                options={{
-                  drawerIcon: () => 
-                  <Image
-                    style={{ width: 50, height: 50 }}
-                    source={require('./assets/calendar_drawer.png')}
-                  />
-                  }}/>
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaView>
