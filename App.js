@@ -11,7 +11,7 @@ import SettingsHomepage from './screens/SettingsHomepage.js'
 import Calendar from './screens/Calendar.js'
 import LoginPage from './LoginPage.js'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, Image } from 'react-native';
+import { Text, Image, StyleSheet } from 'react-native';
 import { useChatClient } from './useChatClient';
 import {AppProvider, useAppContext} from "./AppContext";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
@@ -83,18 +83,19 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page" screenOptions={{
-          drawerLabelStyle: {
-            color: "blue",
-            fontWeight: 'bold'
-          },
-          }}>
+        <Drawer.Navigator initialRouteName="Login Page" >
             <Drawer.Screen name="Login Page" component={LoginPage} 
               options={{
-                drawerItemStyle: { height: 0 }
+                drawerItemStyle: { height: 0 },
               }}/>
+
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
               options={{
+                drawerLabelStyle: {
+                  color: "blue",
+                  fontWeight: 'bold',
+                  fontFamily: 'AppleSDGothicNeo-SemiBold',
+                }, 
                 drawerIcon: () => 
                 <Image
                   style={{ width: 50, height: 50 }}
