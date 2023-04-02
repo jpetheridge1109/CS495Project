@@ -11,7 +11,7 @@ import SettingsHomepage from './screens/SettingsHomepage.js'
 import Calendar from './screens/Calendar.js'
 import LoginPage from './LoginPage.js'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from 'react-native';
+import { Text, Image, StyleSheet } from 'react-native';
 import { useChatClient } from './useChatClient';
 import {AppProvider, useAppContext} from "./AppContext";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
@@ -83,13 +83,76 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page">
-          <Drawer.Screen name="Login Page" component={LoginPage} options = {{ headerTransparent: true, headerTitle:''}}/>
-            <Drawer.Screen name="Find a Group" component={GroupFind} />
-            <Drawer.Screen name="Chat" component={NavigationStack}/>
-            <Drawer.Screen name="Calendar" component={Calendar}/>
-            <Drawer.Screen name="Profile" component={ProfileFind} />
-            <Drawer.Screen name="Preferences" component={SettingsHomepage} />
+        <Drawer.Navigator initialRouteName="Login Page" >
+            <Drawer.Screen name="Login Page" component={LoginPage} 
+              options={{
+                drawerItemStyle: { height: 0 },
+                headerTransparent: true,
+                headerTitle:''
+              }}/>
+
+            <Drawer.Screen name="Frisbee Group" component={GroupFind}
+              options={{
+                drawerLabelStyle: {
+                  color: "blue",
+                  fontWeight: 'bold',
+                  fontFamily: 'AppleSDGothicNeo-SemiBold',
+                }, 
+                drawerIcon: () => 
+                <Image
+                  style={{ width: 50, height: 50 }}
+                  source={require('./assets/frisbee.png')}
+                />
+                
+                }}/>
+            <Drawer.Screen name="Find a Group" component={GroupFind}
+              options={{
+                drawerIcon: () => 
+                <Image
+                  style={{ width: 50, height: 50 }}
+                  source={require('./assets/magnifying.png')}
+                />
+                }}/>
+            <Drawer.Screen name="Chat" component={NavigationStack}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/chat_drawer.png')}
+                  />
+                  }}/>
+            <Drawer.Screen name="Calendar" component={Calendar}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/calendar_drawer.png')}
+                  />
+                  }}/>
+            <Drawer.Screen name="Profile" component={ProfileFind}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/profile.png')}
+                  />
+                  }} />
+            {/* <Drawer.Screen name="Event" component={Event}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/frisbee.png')}
+                  />
+                  }} /> */}
+            <Drawer.Screen name="Preferences" component={SettingsHomepage}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/settings.png')}
+                  />
+                  }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </SafeAreaView>
