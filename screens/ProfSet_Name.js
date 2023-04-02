@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfSet_Name() {
@@ -7,19 +7,61 @@ export default function ProfSet_Name() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordMatchError, setPasswordMatchError] = useState('');
 
   const navigation = useNavigation();
 
   const handleNext = () => {
-    // Here you can perform any necessary validation of the user input
-    // before navigating to the next screen.
+    let isValid = true;
 
-    navigation.navigate('Details', {
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+    if (!firstName) {
+      setFirstNameError('Please input your first name');
+      isValid = false;
+    } else {
+      setFirstNameError('');
+    }
+
+    if (!lastName) {
+      setLastNameError('Please input your last name');
+      isValid = false;
+    } else {
+      setLastNameError('');
+    }
+
+    if (!email.endsWith('@crimson.ua.edu')) {
+      setEmailError('Please enter a valid UA email');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password) {
+      setPasswordError('Please input your password');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (password != confirmPassword) {
+      setPasswordMatchError('Passwords don\'t match!');
+      isValid = false;
+    } else {
+      setPasswordMatchError('');
+    }
+
+    if(isValid) {
+      navigation.navigate('Details', {
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+    }
   };
 
   const handleBack = () => {
@@ -27,44 +69,58 @@ export default function ProfSet_Name() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.heading}>Profile Setup: Name</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.heading}>Profile Setup: Name</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          onChangeText={setFirstName}
+          value={firstName}
+        />
+        {firstNameError ? (<Text style={styles.error}>{firstNameError}</Text>) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          onChangeText={setLastName}
+          value={lastName}
+        />
+        {lastNameError ? (<Text style={styles.error}>{lastNameError}</Text>) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={setEmail}
+          value={email}
+        />
+        {emailError ? (<Text style={styles.error}>{emailError}</Text>) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        {passwordError ? (<Text style={styles.error}>{passwordError}</Text>) : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry
+          onChangeText={setConfirmPassword}
+          value={confirmPassword}
+        />
+        {passwordMatchError ? (<Text style={styles.error}>{passwordMatchError}</Text>) : null}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        onChangeText={setFirstName}
-        value={firstName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        onChangeText={setLastName}
-        value={lastName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={setEmail}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -111,6 +167,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
     fontWeight: 'bold',
   },
 });

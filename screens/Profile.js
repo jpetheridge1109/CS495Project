@@ -9,7 +9,7 @@ import {
   SafeAreaView, ActivityIndicator, FlatList
 } from 'react-native';
 import {find, findOne} from "../db";
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 /* NEXT STEPS:
 -Add settings button to top bar
@@ -24,19 +24,11 @@ let interestIds = [];
 let profilePic = "placeholder"
 let interests = []
 
-export default class InterestCategory extends React.Component{
-  constructor(props) {
-    super(props);
+export default function Profile({navigation}){
+  const [isLoading, setIsLoading] = useState(true);
+  const [userID, setUserId] = useState(global.userID);
 
-    this.state = {
-      data: [],
-      isLoading: true,
-      isDefault: true,
-      userID: global.userID
-    };
-  }
-
-  async getInterestInfo(interestIds){
+  const getInterestInfo = async (interestIds) => {
     let response;
     interests.length = 0
     for(let i = 0; i < interestIds.length; i++){
@@ -45,94 +37,81 @@ export default class InterestCategory extends React.Component{
     }
   }
 
-  async componentWillUnmount(){
-    this.setState({userID:global.userID})
-  }
-  async componentDidMount() {
-    this.setState({userID:global.userID})
+  useEffect(() => {
+    setUserId(global.userID)
     let response;
-    console.log(global.userID)
-    // if(global.userID == ""){
-    //   response = await findOne("user", {"_id": {"$oid":"63eeac0a2e60152c75190171"}});
-    //   console.log(response)
-    // }
+    (async () => {
+      response = await findOne("user", {"_id": {"$oid":userID}});
+      interestIds.length = 0;
 
+      name = response.document.fname +" "+ response.document.lname;
+      age = response.document.age
+      grade = response.document.class
+      major = response.document.major
+      aboutMe = response.document.bio
+      interestIds = response.document.groups
+      profilePic = response.document.img
+      await getInterestInfo(interestIds);
+      setIsLoading(false)
+    })();
+  });
 
-      response = await findOne("user", {"_id": {"$oid":this.state.userID}});
-      console.log(response)
-
-
-    interestIds.length = 0;
-
-    name = response.document.fname +" "+ response.document.lname;
-    age = response.document.age
-    grade = response.document.class
-    major = response.document.major
-    aboutMe = response.document.bio
-    interestIds = response.document.groups
-    profilePic = response.document.img
-    await this.getInterestInfo(interestIds);
-
-    this.setState({isLoading:false})
-  }
-  render(){
-    const RenderedObject = () => {
-      if (this.state.isLoading) {
-        return <SafeAreaView style={styles.container}>
-          <View>
-            <ActivityIndicator size='large' color="#00ff00"/>
-          </View>
-        </SafeAreaView>
-      }
-        return (
-            <View style={styles.container}>
-
-              <ScrollView overScrollMode={"auto"}>
-                <TouchableOpacity style={styles.editBox} onPress={() => this.props.navigation.navigate('ProfileEditor')}>
-                  <Image source={require('../assets/profile_edit_icon.jpg')} style={styles.editPic}></Image>
-                  <Text style={styles.dmFont}>Edit Profile</Text>
-                </TouchableOpacity>
-                <Image source={{uri:profilePic}}
-                       style={styles.profPic}></Image>
-
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>{name}</Text>
-                  <Text style={styles.bodyFont}>Age: {age}</Text>
-                  <Text style={styles.bodyFont}>Grade: {grade}</Text>
-                  <Text style={styles.bodyFontBottom}>Major: {major}</Text>
-                  <TouchableOpacity style={styles.dmBox}>
-                    <Image source={require('../assets/mail-icon.png')}
-                           style={styles.dmPic}></Image>
-                    <Text style={styles.dmFont}>Direct Message</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>About Me:</Text>
-                  <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
-                </View>
-
-                <View style={styles.infoBackground}>
-                  <Text style={styles.nameFont}>Interests:</Text>
-                  {
-                    interests.map((item) => <Item item={item}/>)
-                  }
-                </View>
-              </ScrollView>
-              <StatusBar style='auto'/>
-            </View>
-        );
+  const RenderedObject = () => {
+    if (isLoading) {
+      return <SafeAreaView style={styles.container}>
+        <View>
+          <ActivityIndicator size='large' color="#00ff00"/>
+        </View>
+      </SafeAreaView>
     }
-    const Item = ({item}) => (
-        <TouchableOpacity style={styles.interestBox}>
-          <Image source={{uri:item.img}} style={styles.interestPic}></Image>
-          <Text style={styles.interestFont}>{item.name}</Text>
-        </TouchableOpacity>
-    );
-    return(
-        <RenderedObject/>
+    return (
+        <View style={styles.container}>
+
+          <ScrollView overScrollMode={"auto"}>
+            <TouchableOpacity style={styles.editBox} onPress={() => navigation.navigate('ProfileEditor')}>
+              <Image source={require('../assets/profile_edit_icon.jpg')} style={styles.editPic}></Image>
+              <Text style={styles.dmFont}>Edit Profile</Text>
+            </TouchableOpacity>
+            <Image source={{uri:profilePic}}
+                   style={styles.profPic}></Image>
+
+            <View style={styles.infoBackground}>
+              <Text style={styles.nameFont}>{name}</Text>
+              <Text style={styles.bodyFont}>Age: {age}</Text>
+              <Text style={styles.bodyFont}>Grade: {grade}</Text>
+              <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+              <TouchableOpacity style={styles.dmBox}>
+                <Image source={require('../assets/mail-icon.png')}
+                       style={styles.dmPic}></Image>
+                <Text style={styles.dmFont}>Direct Message</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.infoBackground}>
+              <Text style={styles.nameFont}>About Me:</Text>
+              <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
+            </View>
+
+            <View style={styles.infoBackground}>
+              <Text style={styles.nameFont}>Interests:</Text>
+              {
+                interests.map((item) => <Item item={item}/>)
+              }
+            </View>
+          </ScrollView>
+          <StatusBar style='auto'/>
+        </View>
     )
   }
+  const Item = ({item}) => (
+      <TouchableOpacity style={styles.interestBox}>
+        <Image source={{uri:item.img}} style={styles.interestPic}></Image>
+        <Text style={styles.interestFont}>{item.name}</Text>
+      </TouchableOpacity>
+  );
+  return(
+      <RenderedObject/>
+  )
 }
 
 //Code that is for the container and for formatting
@@ -256,7 +235,7 @@ const styles = StyleSheet.create({
   },
   editBox: {
     backgroundColor: '#ffffff', //'#cccccc',
-    marginTop: 10,
+    marginTop: 40,
     marginBottom: 10,
     marginHorizontal: 5,
     borderRadius: 15,

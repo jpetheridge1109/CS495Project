@@ -5,7 +5,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Event  from './modals/Event.js'
-import Profile from './screens/Profile.js'
+import ProfileFind from './ProfileFind.js'
 import GroupFind from './GroupFind.js'
 import SettingsHomepage from './screens/SettingsHomepage.js'
 import Calendar from './screens/Calendar.js'

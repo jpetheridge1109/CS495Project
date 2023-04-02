@@ -1,11 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
   FlatList,
   StyleSheet,
   Text,
-  StatusBar,
   TouchableOpacity,
   Image, ActivityIndicator
 } from 'react-native';
@@ -16,74 +15,66 @@ import {RFPercentage} from "react-native-responsive-fontsize";
 import {find} from '../db.js'
 let DATA = [];
 
-export default class InterestCategory extends React.Component{
-  constructor(props) {
-    super(props);
+export default function InterestCategory({route, navigation}){
+  //states
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect( () => {
+    (async () => {
+      const categoryName = route.params.categoryName
+      console.log(categoryName);
+      let response = await find("group", { "category": categoryName});
+      DATA = response.documents;
+      setIsLoading(false);      //update screen after data retrieval
+    })();
+  });
 
-    this.state = {
-      data: [],
-      isLoading: true,
-    };
-  }
-
-  async componentDidMount() {
-    this.setState({isLoading: true});      //update screen after data retrieval
-    const {categoryName} = this.props.route.params
-    console.log(categoryName);
-    const response = await find("group", { "category": categoryName});
-    DATA = response.documents;
-    this.setState({isLoading: false});      //update screen after data retrieval
-  }
-
-  render (){
-    const RenderedObject = () => {
-      if (this.state.isLoading) {
-        return <SafeAreaView style={styles.container}>
-          <Text style={styles.categories}>Groups</Text>
-          <View>
-            <ActivityIndicator  size='large' color="#00ff00" />
-          </View>
-        </SafeAreaView>
-      }
-
-      return(
-          <SafeAreaView style={styles.container}>
-            <Text style={styles.categories}>Groups</Text>
-            <FlatList
-                data={DATA}
-                renderItem={({item}) => <Item item={item}/>}
-                keyExtractor={item => item._id}
-            />
-          </SafeAreaView>
-      )
+  const RenderedObject = () => {
+    if (isLoading) {
+      return <SafeAreaView style={styles.container}>
+        <Text style={styles.categories}>Groups</Text>
+        <View>
+          <ActivityIndicator  size='large' color="#00ff00" />
+        </View>
+      </SafeAreaView>
     }
-    const Item = ({item}) => (
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Interest_Home_Page',{groupId:item._id})}>
-          <Surface
-              elevation={20}
-              category="medium"
-              style={{ alignSelf: 'center', width: '90%', aspectRatio: 2, marginBottom: 20, borderRadius: 10}}
-          >
-            <View style={{flex: 1, flexDirection: "row"}}>
-              <View style={{flex: 1, justifyContent: 'center'}}>
-                <Image
-                    source= {{uri:item.img}} style={styles.avatars}/>
-                <Text style={styles.memberCount}>{item.members.length} members</Text>
-              </View>
-              <Divider orientation = 'vertical' width = {2}/>
-              <View style={{flex: 3}}>
-                <Text style={styles.groupNameText}>{item.name}</Text>
-                <Text style = {styles.description}>{item.description}</Text>
-              </View>
-            </View>
-          </Surface>
-        </TouchableOpacity>
-    );
 
     return(
-         <RenderedObject/>
-    );
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.categories}>Groups</Text>
+          <FlatList
+              data={DATA}
+              renderItem={({item}) => <Item item={item}/>}
+              keyExtractor={item => item._id}
+          />
+        </SafeAreaView>
+    )
   }
+
+  const Item = ({item}) => (
+      <TouchableOpacity onPress={() => navigation.navigate('Interest_Home_Page',{groupId:item._id})}>
+        <Surface
+            elevation={20}
+            category="medium"
+            style={{ alignSelf: 'center', width: '90%', aspectRatio: 2, marginBottom: 20, borderRadius: 10}}
+        >
+          <View style={{flex: 1, flexDirection: "row"}}>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+              <Image
+                  source= {{uri:item.img}} style={styles.avatars}/>
+              <Text style={styles.memberCount}>{item.members.length} members</Text>
+            </View>
+            <Divider orientation = 'vertical' width = {2}/>
+            <View style={{flex: 3}}>
+              <Text style={styles.groupNameText}>{item.name}</Text>
+              <Text style = {styles.description}>{item.description}</Text>
+            </View>
+          </View>
+        </Surface>
+      </TouchableOpacity>
+  );
+  return(
+      <RenderedObject/>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -146,3 +137,4 @@ const styles = StyleSheet.create({
     color: '#999191',
   }
 });
+

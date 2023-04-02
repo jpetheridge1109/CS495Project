@@ -1,97 +1,153 @@
-import { StyleSheet, Text, View, Pressable, Modal, Alert } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator
+} from 'react-native';
 
-export default function RSVPList(){
-    return(
-        <View style = {styles.container}>
-            <Text style = {styles.textStyle}>TESTING TESTING TESTING</Text>
+import { Surface } from "@react-native-material/core";;
+import {RFPercentage} from "react-native-responsive-fontsize";
+import {findOne} from "../db";
+
+let DATA = [];
+export default function RSVPList({route, navigation}){
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getMemberInfo = async (membersArray) => {
+    let response;
+    DATA.length = 0;
+    for(let i = 0; i < membersArray.length; i++){
+      response = await findOne("user", {"_id": {"$oid":membersArray[i]}});
+      DATA.push(response.document)
+    }
+  }
+
+  useEffect(() => {
+    const eventId = route.params.eventId
+    let response;
+    let memberIDs;
+    (async () => {
+      response = await findOne("event", {"_id": {"$oid":eventId}});
+      memberIDs = response.document.RSVPs;
+      await getMemberInfo(memberIDs)
+      setIsLoading(false);      //update screen after data retrieval
+    })();
+  });
+
+  const RenderedObject = () => {
+    if (isLoading) {
+      return <SafeAreaView style={styles.container}>
+        <Text style={styles.categories}>Members</Text>
+        <View>
+          <ActivityIndicator  size='large' color="#00ff00" />
         </View>
-    );
+      </SafeAreaView>
+    }
+
+    return(
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.categories}>Members</Text>
+          <FlatList
+              data={DATA}
+              renderItem={({item}) => <Item item={item}/>}
+              keyExtractor={item => item.id}
+          />
+        </SafeAreaView>
+    )
+  }
+
+  const Item = ({item}) => (
+      <TouchableOpacity onPress={() => navigation.navigate('Member_Profile', {memberId: item._id, isDefault:false})}>
+        <Surface
+            elevation={20}
+            category="medium"
+            style={{ alignSelf: 'center', width: '80%', aspectRatio: 4, marginBottom: 20, borderRadius: 10}}
+        >
+          <View style={{flex: 1, flexDirection: "row"}}>
+            <View style={{flex: 1, justifyContent:'center'}}>
+              <Image
+                  source= {{uri:item.img}} style={styles.avatars}/>
+            </View>
+            <View style={{flex: 3, justifyContent:'center'}}>
+              <Text style={styles.groupNameText}>{item.fname} {item.lname}</Text>
+            </View>
+          </View>
+        </Surface>
+      </TouchableOpacity>
+  );
+
+
+  return (
+      <RenderedObject/>
+  )
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
-    },
-    modalWrapper: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    modalView: {
-      verticalAlign: 'center',
-      margin: 0,
-      backgroundColor: 'white',
-      borderRadius: 0,
-      padding: 35,
-      alignItems: 'center',
-      justifyContent: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonOpen: {
-      backgroundColor: '#F194FF',
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
-    },
-    buttonYes: {
-      backgroundColor: "#1eb76a",
-    },
-    buttonCancel: {
-      backgroundColor: "#b51f30",
-    },
-    buttonRSVP: {
-      backgroundColor: '#DA8E12',
-      justifyContent: 'flex-start',
-      flex: 1,
-      marginHorizontal: 10,
-    },
-    buttonViewPpl: {
-      backgroundColor: '#DA8E12',
-      justifyContent: 'flex-end',
-      flex: 1,
-      marginHorizontal: 10,
-    },
-    textStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: 'center',
-    },
-    modalLeftText: {
-      flex: 1,
-      marginBottom: 15,
-      textAlign: 'left',
-      justifyContent: 'flex-start',
-    },
-    modalRightText: {
-      flex: 1,
-      marginBottom: 15,
-      textAlign: 'right',
-      justifyContent: 'flex-end',
-    },
-  });
+  container: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight || 0,
+    backgroundColor: '#344e71'
+  },
+  item: {
+    width: '35%',
+    aspectRatio: 1,
+    marginVertical: 16,
+    marginHorizontal: 16,
+    borderRadius:30,
+    justifyContent: 'center'
+  },
+  categories:{
+    paddingTop: 20,
+    textAlign: 'center',
+    fontSize: RFPercentage(5),
+    color: '#e9dfdf',
+    paddingBottom:20
+  },
+  text:{
+    paddingTop: '2%',
+    pattingBottom: '2%',
+    textAlign: 'center',
+    //fontSize: '40%',
+    color: '#343333',
+  },
+  image:{
+    width: '50%',
+    height: undefined,
+    aspectRatio: 1,
+    alignSelf: 'center'
+  },
+  avatars:{
+    alignSelf: 'center',
+    justifySelf: 'center',
+    height: '75%',
+    aspectRatio:1,
+    borderRadius: 10000,
+    marginTop: '5%'
+  },
+  groupNameText:{
+    textAlign: 'left',
+    fontSize: RFPercentage(3),
+    fontWeight:'bold'
+  },
+  memberCount: {
+    textAlign:'center',
+    paddingTop: '2%',
+    //fontSize:'20%',
+    color: '#999191',
+    fontWeight:'bold'
+  },
+  description:{
+    paddingLeft:'2%',
+    //fontSize: '20%',
+    color: '#999191'
+  },
+  activityIndicator:{
+    alignSelf: 'center'
+  }
+});

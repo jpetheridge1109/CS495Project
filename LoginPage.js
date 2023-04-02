@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
@@ -12,10 +12,10 @@ const Stack = createStackNavigator();
 export default function LoginPage() {
   return (
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginHome} />
-        <Stack.Screen name="Name" component={ProfSetName} />
-        <Stack.Screen name="Details" component={ProfSetDetails} />
-        <Stack.Screen name="About Me" component={ProfSetAboutMe} />
+        <Stack.Screen name="Login" component={LoginHome} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="Name" component={ProfSetName} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="Details" component={ProfSetDetails} options = {{ headerTransparent: true, headerTitle:''}}/>
+        <Stack.Screen name="About Me" component={ProfSetAboutMe} options = {{ headerTransparent: true, headerTitle:''}}/>
       </Stack.Navigator>
   );
 }
@@ -44,31 +44,33 @@ function LoginHome() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={setEmail}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <View style={styles.signupTextContainer}>
-        <Text style={styles.signupText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={handleSignIn}>
-          <Text style={styles.signupLink}>Sign up here</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Login</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={setEmail}
+          value={email}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        <View style={styles.signupTextContainer}>
+          <Text style={styles.signupText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={handleSignIn}>
+            <Text style={styles.signupLink}>Sign up here</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
