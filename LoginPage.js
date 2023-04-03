@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -6,6 +6,7 @@ import ProfSetName from './screens/ProfSet_Name.js'
 import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 import {findOne} from "./db";
+import {AppContext} from "./AppContext";
 
 const Stack = createStackNavigator();
 
@@ -32,10 +33,14 @@ function LoginHome() {
       console.log("Invalid username or password");
     }
     else{
-      const userID = response.document._id;
-      global.userID = userID;
-      console.log("User " + userID + " successfully logged in")
-      navigation.navigate('Find a Group', {userID:userID});
+      //const {userID, setUserID} = useContext(AppContext)
+      const user = response.document._id;
+      global.userID = user;
+      //setUserID(user)
+      console.log(user);
+      console.log("hello")
+      console.log("User " + user + " successfully logged in")
+      navigation.navigate('Find a Group', {user:user});
     }
   };
 
