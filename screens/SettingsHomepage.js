@@ -6,16 +6,20 @@ import { createStackNavigator } from '@react-navigation/stack';
 import About from './About';
 import Notifications from './Notifications';
 import BlockedContacts from './BlockedContacts';
+import Terms from './terms.js';
+import Privacy from './privacy.js';
 
 const Stack = createStackNavigator();
 
 export default function SettingsHomepage() {
   return (
       <Stack.Navigator initialRouteName="Settings">
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="About" component={About} />
-        <Stack.Screen name="Notifications" component={Notifications} />
-        <Stack.Screen name="Blocked Contacts" component={BlockedContacts} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="About" component={About} />
+      <Stack.Screen name="Notifications" component={Notifications} />
+      <Stack.Screen name="Blocked Contacts" component={BlockedContacts} />
+      <Stack.Screen name="Terms" component={Terms} />
+      <Stack.Screen name="Privacy" component={Privacy}/>
       </Stack.Navigator>
   );
 }

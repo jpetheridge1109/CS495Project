@@ -3,23 +3,39 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { WebView } from 'react-native-webview'
+import { createStackNavigator } from '@react-navigation/stack';
+import Terms from './terms.js';
+import Privacy from './privacy.js';
 
-export default function About() {
+const Stack = createStackNavigator();
+
+/*export default function About() {
+  return (
+    <Stack.Navigator initialRouteName="AboutHomepage">
+      <Stack.Screen name="AboutHomepage" component={AboutHomepage} />
+      <Stack.Screen name="Terms" component={Terms} />
+      <Stack.Screen name="Privacy" component={Privacy}/>
+    </Stack.Navigator>
+  )
+}*/
+
+export default function About({navigation}){
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
-  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  //const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
+  //const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleTermsAndConditionsPress = () => {
-    setShowTermsAndConditions(!showTermsAndConditions);
+    navigation.navigate('Terms');
   };
 
   const handlePrivacyPolicyPress = () => {
-    setShowPrivacyPolicy(!showPrivacyPolicy);
+    navigation.navigate('Privacy');
   };
   
   return (
@@ -46,30 +62,12 @@ export default function About() {
         <Text style={styles.sectionHeader}>App Information</Text>
         <Text style={styles.attribute}>OS Version: 1.0</Text>
         <TouchableOpacity onPress={handleTermsAndConditionsPress}>
-          <Text style={[styles.attribute, styles.underline]}>{showTermsAndConditions ? 'Hide Terms and Conditions' : 'Show Terms and Conditions'}</Text>
+          <Text style={[styles.attribute, styles.underline]}>{'View Terms and Conditions'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handlePrivacyPolicyPress}>
-          <Text style={[styles.attribute, styles.underline]}>{showPrivacyPolicy ? 'Hide Privacy Policy' : 'Show Privacy Policy'}</Text>
+          <Text style={[styles.attribute, styles.underline]}>{'View Privacy Policy'}</Text>
         </TouchableOpacity>
       </View>
-      {showTermsAndConditions && (
-        <WebView
-          style={{ flex: 1, marginTop: 20 }}
-          originWhitelist={['*']}
-          source={require('../external/termsAndConditions.html')}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-        />
-      )}
-      {showPrivacyPolicy && (
-        <WebView
-          style={{ flex: 1, marginTop: 20 }}
-          originWhitelist={['*']}
-          source={require('../external/privacy.html')}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-        />
-      )}
     </View>
   );
 }
