@@ -95,8 +95,7 @@ export default () => {
               options={{
                 drawerLabelStyle: {
                   color: "blue",
-                  fontWeight: 'bold',
-                  fontFamily: 'AppleSDGothicNeo-SemiBold',
+                  fontWeight: 'bold'
                 }, 
                 drawerIcon: () => 
                 <Image
