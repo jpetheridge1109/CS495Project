@@ -9,7 +9,7 @@ import Privacy from './privacy.js';
 
 const Stack = createStackNavigator();
 
-export default function About() {
+/*export default function About() {
   return (
     <Stack.Navigator initialRouteName="AboutHomepage">
       <Stack.Screen name="AboutHomepage" component={AboutHomepage} />
@@ -17,9 +17,9 @@ export default function About() {
       <Stack.Screen name="Privacy" component={Privacy}/>
     </Stack.Navigator>
   )
-}
+}*/
 
-function AboutHomepage({navigation}){
+export default function About({navigation}){
 
   const [showPassword, setShowPassword] = useState(false);
 
