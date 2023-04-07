@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
 import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
-import {findOne} from "./db";
+import {findOne, insertOne} from "./db";
 import {AppContext} from "./AppContext";
 
 const Stack = createStackNavigator();
@@ -36,12 +36,16 @@ function LoginHome() {
       //const {userID, setUserID} = useContext(AppContext)
       const user = response.document._id;
       global.userID = user;
-      //setUserID(user)
-      console.log(user);
-      console.log("hello")
       console.log("User " + user + " successfully logged in")
       navigation.navigate('Find a Group', {user:user});
     }
+    // let object =
+    //     {
+    //       "name": "John Sample",
+    //       "age": 42
+    //     }
+    // const insertResponse = await insertOne('user_test', object);
+    // console.log(insertResponse);
   };
 
   const handleSignIn = () => {
