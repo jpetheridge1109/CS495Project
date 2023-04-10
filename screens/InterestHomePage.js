@@ -18,6 +18,8 @@ import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {findOne, aggregation, find} from '../db.js'
 import Event from "../modals/Event";
+import {StreamChat} from "stream-chat";
+import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
 
 let image = "placeholder";
 let groupName = "";
@@ -139,6 +141,40 @@ export default function InterestHomePage({route, navigation}){
     navigation.navigate('RSVP_List',{eventId: eventID})
     //navigation.navigate('RSVP List');
   };
+  const filter = { type: 'messaging', members: { $in: [chatUserId] }, id: GROUPID };
+
+  const onJoin = async () => {
+    const chatClient = StreamChat.getInstance(chatApiKey);
+    const user = {
+      id: 'admin',
+      name: 'admin',
+    };
+
+
+    console.log("user id: " + chatClient.userID);
+    if(chatClient.userID === undefined){
+      await chatClient.connectUser(user, chatClient.devToken('admin'));
+      console.log("user connected")
+    }
+    await chatClient.disconnectUser()
+    console.log("user disconnected")
+    //await chatClient.disconnectUser();
+    await chatClient.connectUser(user, chatClient.devToken('admin'));
+    console.log("user connected")
+    const channels = await chatClient.queryChannels(filter);
+    let channel;
+    if (channels.length === 0){
+      channel = chatClient.channel('messaging',GROUPID,{name: groupName, members:['admin']})
+      await channel.create();
+    }
+    else{
+      channel = chatClient.channel('messaging',GROUPID);
+    }
+
+    console.log("channel: " + channel);
+    await channel.addMembers([chatUserId], {text: chatUserName + ' joined the channel'})
+   await chatClient.disconnectUser()
+  }
 
   const createTwoButtonAlert = () =>
       Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
@@ -270,7 +306,7 @@ export default function InterestHomePage({route, navigation}){
                     width: '20%',
                     alignSelf:'center',
                     justifySelf: 'center'
-                  }}>Join</Button>
+                  }} onPress={() => onJoin()}>Join</Button>
                   <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
                 </ImageBackground>
               </View>
@@ -367,7 +403,7 @@ export default function InterestHomePage({route, navigation}){
                     width: '20%',
                     alignSelf:'center',
                     justifySelf: 'center'
-                  }}>Join</Button>
+                  }} onPress={() => onJoin()}>Join</Button>
                   <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
                 </ImageBackground>
               </View>
@@ -500,7 +536,7 @@ export default function InterestHomePage({route, navigation}){
                   width: '20%',
                   alignSelf:'center',
                   justifySelf: 'center'
-                }}>Join</Button>
+                }} onPress={() => onJoin()}>Join</Button>
                 <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
               </ImageBackground>
             </View>

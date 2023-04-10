@@ -7,6 +7,8 @@ import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 import {findOne, insertOne} from "./db";
 import {AppContext} from "./AppContext";
+import {chatApiKey, chatUserId, chatUserName} from "./chatConfig";
+import {StreamChat} from "stream-chat";
 
 const Stack = createStackNavigator();
 
@@ -37,6 +39,11 @@ function LoginHome() {
       const user = response.document._id;
       global.userID = user;
       console.log("User " + user + " successfully logged in")
+      const chat_user = {
+        id: chatUserId,
+        name: chatUserName,
+      };
+      const chatClient = StreamChat.getInstance(chatApiKey);
       navigation.navigate('Find a Group', {user:user});
     }
     // let object =

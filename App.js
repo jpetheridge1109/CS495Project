@@ -50,6 +50,8 @@ const ChannelListScreen = props => {
   const { setChannel } = useAppContext();
   return (
       <ChannelList
+          filters={filters}
+          sort = {sort}
           onSelect={(channel) => {
             const { navigation } = props;
             setChannel(channel);
@@ -62,10 +64,6 @@ const ChannelListScreen = props => {
 
 const NavigationStack = () => {
   const { clientIsReady } = useChatClient();
-
-  if (!clientIsReady) {
-    return <Text>Loading chat ...</Text>
-  }
   return (
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -83,7 +81,7 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page" >
+        <Drawer.Navigator initialRouteName="Login Page">
             <Drawer.Screen name="Login Page" component={LoginPage} 
               options={{
                 drawerItemStyle: { height: 0 },
@@ -114,6 +112,7 @@ export default () => {
                 }}/>
             <Drawer.Screen name="Chat" component={NavigationStack}
                 options={{
+                  unmountOnBlur:true,
                   drawerIcon: () => 
                   <Image
                     style={{ width: 50, height: 50 }}

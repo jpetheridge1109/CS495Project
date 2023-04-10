@@ -7,6 +7,7 @@ import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './chatConfi
 const user = {
   id: chatUserId,
   name: chatUserName,
+
 };
 
 const chatClient = StreamChat.getInstance(chatApiKey);
@@ -17,7 +18,9 @@ export const useChatClient = () => {
   useEffect(() => {
     const setupClient = async () => {
       try {
-        chatClient.connectUser(user, chatUserToken);
+        chatClient.connectUser(user, chatClient.devToken(chatUserId));
+
+
         setClientIsReady(true);
 
         // connectUser is an async function. So you can choose to await for it or not depending on your use case (e.g. to show custom loading indicator)
