@@ -84,12 +84,15 @@ export default () => {
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
         <Drawer.Navigator initialRouteName="Login Page" >
-            <Drawer.Screen name="Login Page" component={LoginPage} 
+            <Drawer.Screen name="Login Page" component={LoginPage}
               options={{
                 drawerItemStyle: { height: 0 },
                 headerTransparent: true,
-                headerTitle:''
-              }}/>
+                headerTitle: ''
+              }}
+              screenOptions={{
+                headerShown: "false"
+              }} />
 
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
               options={{
