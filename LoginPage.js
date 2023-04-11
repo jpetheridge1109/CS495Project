@@ -43,7 +43,6 @@ function LoginHome() {
         id: chatUserId,
         name: chatUserName,
       };
-      const chatClient = StreamChat.getInstance(chatApiKey);
       navigation.navigate('Find a Group', {user:user});
     }
     // let object =

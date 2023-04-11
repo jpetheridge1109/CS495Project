@@ -16,7 +16,7 @@ import {
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
-import {findOne, aggregation, find} from '../db.js'
+import {findOne, aggregation, find, updateOne} from '../db.js'
 import Event from "../modals/Event";
 import {StreamChat} from "stream-chat";
 import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
@@ -36,6 +36,7 @@ let eventTimes = [];
 let eventIDs = [];
 let eventLocations = [];
 let eventOrganizers = [];
+let inGroup = false;
 
 export default function InterestHomePage({route, navigation}){
   const [isLoading, setIsLoading] = useState(true);
@@ -129,8 +130,16 @@ export default function InterestHomePage({route, navigation}){
       createdDate = response.document.created_date
       memberCount = response.document.members.length
       memberIDs = response.document.members
-      await getMemberPreviewInfo(memberIDs)
-      console.log(await getUpcomingEventInfo(groupId));
+      let response2 = await findOne("group", {"_id": {"$oid":GROUPID}, "members": {"$oid": global.userID}}) //check if the user is the member of the group already
+      if(response2.document != null){
+        inGroup = true;
+      }
+      else{
+        inGroup = false;
+      }
+      await getMemberPreviewInfo(memberIDs);
+      await getUpcomingEventInfo(groupId); //fixme is console.log(the only thing pausing here
+
       //this.setState({isLoading: false});  //update screen after data retrieval
       setIsLoading(false) //update screen after data retrieval
     })();
@@ -144,6 +153,14 @@ export default function InterestHomePage({route, navigation}){
   const filter = { type: 'messaging', members: { $in: [chatUserId] }, id: GROUPID };
 
   const onJoin = async () => {
+    //add user to group in db
+    await updateOne('group', {"_id": {"$oid":GROUPID}}, {"$push": {"members": {"$oid": global.userID}}})
+    await updateOne('user', {"_id": {"$oid":global.userID}}, {"$push": {"groups": {"$oid": GROUPID}}})
+
+    //let response2 = await findOne("group", {"_id": {"$oid":GROUPID}, "members": {"$oid": global.userID}}) //check if the user is the member of the group already
+   //inGroup = true;  //fixme do we need to actually check we were put in the group
+
+    //add user to chat
     const chatClient = StreamChat.getInstance(chatApiKey);
     const user = {
       id: 'admin',
@@ -153,18 +170,19 @@ export default function InterestHomePage({route, navigation}){
 
     console.log("user id: " + chatClient.userID);
     if(chatClient.userID === undefined){
-      await chatClient.connectUser(user, chatClient.devToken('admin'));
+      await chatClient.connectUser(user, chatClient.devToken('admin')); //login admin if no one logged in
       console.log("user connected")
     }
     await chatClient.disconnectUser()
-    console.log("user disconnected")
-    //await chatClient.disconnectUser();
-    await chatClient.connectUser(user, chatClient.devToken('admin'));
+    console.log("user disconnected")  //disconnect current user
+
+    await chatClient.connectUser(user, chatClient.devToken('admin')); //login admin
     console.log("user connected")
+
     const channels = await chatClient.queryChannels(filter);
     let channel;
-    if (channels.length === 0){
-      channel = chatClient.channel('messaging',GROUPID,{name: groupName, members:['admin']})
+    if (channels.length === 0){ //create new channel if doesn't exist
+      channel = chatClient.channel('messaging',GROUPID,{name: groupName, members:['admin']})    //always add admin to every new group
       await channel.create();
     }
     else{
@@ -172,8 +190,10 @@ export default function InterestHomePage({route, navigation}){
     }
 
     console.log("channel: " + channel);
-    await channel.addMembers([chatUserId], {text: chatUserName + ' joined the channel'})
-   await chatClient.disconnectUser()
+    await channel.addMembers([chatUserId], {text: chatUserName + ' joined the channel'})    //add member to the channel
+   await chatClient.disconnectUser()    //disconnect admin
+    setIsLoading(true);
+    //navigation.navigate("Interest_Home_Page", {groupId: GROUPID});  //update screen
   }
 
   const createTwoButtonAlert = () =>
@@ -190,6 +210,7 @@ export default function InterestHomePage({route, navigation}){
       ]);
 
   const EventModal = () => {
+    //fixme people reloading on modal popup
     return(<Modal
         animationType = "fade"
         transparent = {true}
@@ -229,6 +250,106 @@ export default function InterestHomePage({route, navigation}){
     </Modal>);
   }
 
+  const BlurredChat = () => {
+    if(!inGroup){
+      return(
+          <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+            <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
+              <Button  buttonStyle={{
+                backgroundColor: 'rgba(111, 202, 186, 1)',
+                borderRadius: 5,
+                width: '20%',
+                alignSelf:'center',
+                justifySelf: 'center'
+              }} onPress={() => onJoin()}>Join</Button>
+              <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
+            </ImageBackground>
+          </View>
+      )
+    }
+   return (<View></View>)
+  }
+
+
+  const Calendar_Chat_Buttons = () => {
+    return(
+        <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
+          <TouchableOpacity style = {{flex:1}}  onPress={() => navigation.navigate('groupChat')} disabled={!inGroup}>
+            <Surface
+                elevation={20}
+                category="medium"
+                style={styles.buttonTile}
+            >
+              <Image source = {require('../assets/chat.png')} style = {styles.buttonImage}/>
+              <Text style = {styles.memberName}>Chat</Text>
+            </Surface>
+          </TouchableOpacity>
+          <TouchableOpacity style = {{flex:1}} onPress={() => navigation.navigate('groupCalendar')} disabled={!inGroup}>
+            <Surface
+                elevation={20}
+                category="medium"
+                style={styles.buttonTile}
+            >
+              <Image source = {require('../assets/calendar.png')} style = {styles.buttonImage}/>
+              <Text style = {styles.memberName}>Calendar</Text>
+            </Surface>
+          </TouchableOpacity>
+        </View>
+    )
+  }
+
+  const Group_Info = () => {
+    return(
+        <View><Surface
+            elevation={20}
+            category="medium"
+            style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
+        >
+          <Image
+              source = {{uri:image}}
+              style = {styles.groupPic}/>
+          <Text style = {styles.text}>{groupName}</Text>
+          <Text style = {styles.groupDetails}>Created {createdDate}</Text>
+          <Text style = {styles.description}>{description}</Text>
+        </Surface>
+
+          <Surface
+              elevation={20}
+              category="medium"
+              style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
+          >
+            <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
+            <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
+              <View style = {{flex:1}}>
+                <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
+                  <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
+                </TouchableOpacity>
+                <Text style = {styles.memberName}>{memberNames[0]}</Text>
+              </View>
+              <View style = {{flex:1}}>
+                <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
+                  <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
+                </TouchableOpacity>
+                <Text style = {styles.memberName}>{memberNames[1]}</Text>
+              </View>
+              <View style = {{flex:1}}>
+                <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[2], isDefault:false})}>
+                  <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
+                </TouchableOpacity>
+                <Text style = {styles.memberName}>{memberNames[2]}</Text>
+              </View>
+              <View style = {{flex:1}}>
+                <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
+                  <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
+                </TouchableOpacity>
+                <Text style = {styles.memberName}>View All</Text>
+              </View>
+            </View>
+          </Surface></View>
+        )
+
+  }
+
   const RenderedObject = () => {
     if (isLoading) {
       return <SafeAreaView style={styles.container}>
@@ -242,54 +363,7 @@ export default function InterestHomePage({route, navigation}){
       return(
           <SafeAreaView style={styles.container}>
             <ScrollView>
-              <EventModal></EventModal>
-              <Surface
-                  elevation={20}
-                  category="medium"
-                  style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
-              >
-                <Image
-                    source = {{uri:image}}
-                    style = {styles.groupPic}/>
-                <Text style = {styles.text}>{groupName}</Text>
-                <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-                <Text style = {styles.description}>{description}</Text>
-              </Surface>
-
-              <Surface
-                  elevation={20}
-                  category="medium"
-                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-              >
-                <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
-                <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
-                      <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[0]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[1], isDefault:false})}>
-                      <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[1]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
-                      <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[2]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
-                      <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>View All</Text>
-                  </View>
-                </View>
-              </Surface>
-
+              <Group_Info/>
               <Surface
                   elevation={20}
                   category="medium"
@@ -298,18 +372,8 @@ export default function InterestHomePage({route, navigation}){
                 <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
                 <Text style={{textAlign: 'center', paddingTop: '3%', paddingBottom:'1%', fontSize: RFPercentage(2)}}>No Events</Text>
               </Surface>
-              <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-                <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                  <Button  buttonStyle={{
-                    backgroundColor: 'rgba(111, 202, 186, 1)',
-                    borderRadius: 5,
-                    width: '20%',
-                    alignSelf:'center',
-                    justifySelf: 'center'
-                  }} onPress={() => onJoin()}>Join</Button>
-                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
-                </ImageBackground>
-              </View>
+              <Calendar_Chat_Buttons/>
+             <BlurredChat/>
             </ScrollView>
           </SafeAreaView>
       );
@@ -320,53 +384,7 @@ export default function InterestHomePage({route, navigation}){
           <SafeAreaView style={styles.container}>
             <ScrollView>
               <EventModal></EventModal>
-              <Surface
-                  elevation={20}
-                  category="medium"
-                  style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
-              >
-                <Image
-                    source = {{uri:image}}
-                    style = {styles.groupPic}/>
-                <Text style = {styles.text}>{groupName}</Text>
-                <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-                <Text style = {styles.description}>{description}</Text>
-              </Surface>
-
-              <Surface
-                  elevation={20}
-                  category="medium"
-                  style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-              >
-                <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
-                <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[0], isDefault:false})}>
-                      <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[0]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
-                      <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[1]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[2], isDefault:false})}>
-                      <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>{memberNames[2]}</Text>
-                  </View>
-                  <View style = {{flex:1}}>
-                    <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
-                      <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.memberName}>View All</Text>
-                  </View>
-                </View>
-              </Surface>
-
+              <Group_Info/>
               <Surface
                   elevation={20}
                   category="medium"
@@ -395,18 +413,8 @@ export default function InterestHomePage({route, navigation}){
                   </TouchableOpacity>
                 </View>
               </Surface>
-              <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-                <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                  <Button  buttonStyle={{
-                    backgroundColor: 'rgba(111, 202, 186, 1)',
-                    borderRadius: 5,
-                    width: '20%',
-                    alignSelf:'center',
-                    justifySelf: 'center'
-                  }} onPress={() => onJoin()}>Join</Button>
-                  <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
-                </ImageBackground>
-              </View>
+              <Calendar_Chat_Buttons/>
+              <BlurredChat/>
             </ScrollView>
           </SafeAreaView>
       );
@@ -416,54 +424,7 @@ export default function InterestHomePage({route, navigation}){
         <SafeAreaView style={styles.container}>
           <ScrollView>
             <EventModal></EventModal>
-            <Surface
-                elevation={20}
-                category="medium"
-                style={{ alignSelf: 'center', width: '80%', aspectRatio: 0.8, marginBottom: 20, borderRadius: 10}}
-            >
-              <Image
-                  source = {{uri:image}}
-                  style = {styles.groupPic}/>
-              <Text style = {styles.text}>{groupName}</Text>
-              <Text style = {styles.groupDetails}>Created {createdDate}</Text>
-              <Text style = {styles.description}>{description}</Text>
-            </Surface>
-
-            <Surface
-                elevation={20}
-                category="medium"
-                style={{ alignSelf: 'center', width: '90%', aspectRatio: 3, marginBottom: 20, borderRadius: 10}}
-            >
-              <Text style = {{paddingLeft:'3%', paddingBottom:'1%',fontWeight:'bold',fontSize: RFPercentage(2)}}>Members: {memberCount}</Text>
-              <View style={{flex: 1, flexDirection: "row", alignContent: 'space-between'}}>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile',{memberId: memberIDs[0], isDefault:false})}>
-                    <Image source = {{uri:memberImages[0]}} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>{memberNames[0]}</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[1], isDefault:false})}>
-                    <Image source = {{uri:memberImages[1]}} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>{memberNames[1]}</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Member_Profile', {memberId: memberIDs[2], isDefault:false})}>
-                    <Image source = {{uri:memberImages[2]}} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>{memberNames[2]}</Text>
-                </View>
-                <View style = {{flex:1}}>
-                  <TouchableOpacity style = {styles.memberTouchable} onPress={() => navigation.navigate('Members_Page',{groupId:GROUPID})}>
-                    <Image source = {require('../assets/view-more.png')} style = {styles.avatars}/>
-                  </TouchableOpacity>
-                  <Text style = {styles.memberName}>View All</Text>
-                </View>
-              </View>
-            </Surface>
-
-
+           <Group_Info/>
             <Surface
                 elevation={20}
                 category="medium"
@@ -505,41 +466,8 @@ export default function InterestHomePage({route, navigation}){
                 </TouchableOpacity>
               </View>
             </Surface>
-            <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
-              <TouchableOpacity style = {{flex:1}}  onPress={() => navigation.navigate('groupChat')}>
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={styles.buttonTile}
-                >
-                  <Image source = {require('../assets/chat.png')} style = {styles.buttonImage}/>
-                  <Text style = {styles.memberName}>Chat</Text>
-                </Surface>
-              </TouchableOpacity>
-              <TouchableOpacity style = {{flex:1}} onPress={() => navigation.navigate('groupCalendar')}>
-                <Surface
-                    elevation={20}
-                    category="medium"
-                    style={styles.buttonTile}
-                >
-                  <Image source = {require('../assets/calendar.png')} style = {styles.buttonImage}/>
-                  <Text style = {styles.memberName}>Calendar</Text>
-                </Surface>
-              </TouchableOpacity>
-            </View>
-
-            <View style = {{width:'80%', aspectRatio:2, alignSelf:'center' }}>
-              <ImageBackground source = {require('../assets/chat_demo_blurred.png')} style={{width:'100%',height:'80%', justifyContent:'center', borderRadius:100}}>
-                <Button  buttonStyle={{
-                  backgroundColor: 'rgba(111, 202, 186, 1)',
-                  borderRadius: 5,
-                  width: '20%',
-                  alignSelf:'center',
-                  justifySelf: 'center'
-                }} onPress={() => onJoin()}>Join</Button>
-                <Text style = {{textAlign:'center', fontWeight:'bold', color:'white', paddingTop:'2%',fontSize: RFPercentage(2)}}>Join to see chat and calendar</Text>
-              </ImageBackground>
-            </View>
+           <Calendar_Chat_Buttons/>
+            <BlurredChat/>
           </ScrollView>
         </SafeAreaView>
     );
