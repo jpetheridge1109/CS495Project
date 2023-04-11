@@ -87,11 +87,15 @@ export default () => {
             <Drawer.Screen name="Login Page" component={LoginPage}
               options={{
                 drawerItemStyle: { height: 0 },
-                headerTransparent: true,
-                headerTitle: ''
+                headerTransparent: false,
+                headerTitle: 'hi',
+                headerShown: false,
+                drawerLockMode: 'locked-closed',
+                gestureEnabled: false
               }}
               screenOptions={{
-                headerShown: "false"
+                headerBackButton: "disabled",
+                swipeEdgeWidth: 0
               }} />
 
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
