@@ -29,7 +29,6 @@ export default function MemberList({route, navigation}){
   }
 
   useEffect( () => {
-
     (async () => {
       const groupId = route.params.groupId
       let response = await findOne("group", {"_id": {"$oid":groupId}});

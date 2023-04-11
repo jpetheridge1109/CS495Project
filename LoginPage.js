@@ -38,11 +38,8 @@ function LoginHome() {
       //const {userID, setUserID} = useContext(AppContext)
       const user = response.document._id;
       global.userID = user;
+      global.userName = response.document.fname + " " + response.document.lname;
       console.log("User " + user + " successfully logged in")
-      const chat_user = {
-        id: chatUserId,
-        name: chatUserName,
-      };
       navigation.navigate('Find a Group', {user:user});
     }
     // let object =

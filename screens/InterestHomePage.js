@@ -20,6 +20,14 @@ import {findOne, aggregation, find, updateOne} from '../db.js'
 import Event from "../modals/Event";
 import {StreamChat} from "stream-chat";
 import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
+import {
+  Channel,
+  Chat,
+  MessageInput,
+  MessageList,
+  OverlayProvider
+} from "stream-chat-expo";
+import {useAppContext} from "../AppContext";
 
 let image = "placeholder";
 let groupName = "";
@@ -148,9 +156,8 @@ export default function InterestHomePage({route, navigation}){
   const handleRSVPListPress = () => {
     setModalVisible(!modalVisible)
     navigation.navigate('RSVP_List',{eventId: eventID})
-    //navigation.navigate('RSVP List');
   };
-  const filter = { type: 'messaging', members: { $in: [chatUserId] }, id: GROUPID };
+  const filter = { type: 'messaging', members: { $in: [global.userID] }, id: GROUPID };
 
   const onJoin = async () => {
     //add user to group in db
@@ -182,6 +189,7 @@ export default function InterestHomePage({route, navigation}){
     const channels = await chatClient.queryChannels(filter);
     let channel;
     if (channels.length === 0){ //create new channel if doesn't exist
+      console.log(groupName);
       channel = chatClient.channel('messaging',GROUPID,{name: groupName, members:['admin']})    //always add admin to every new group
       await channel.create();
     }
@@ -190,7 +198,7 @@ export default function InterestHomePage({route, navigation}){
     }
 
     console.log("channel: " + channel);
-    await channel.addMembers([chatUserId], {text: chatUserName + ' joined the channel'})    //add member to the channel
+    await channel.addMembers([global.userID], {text: global.userName + ' joined the channel'})    //add member to the channel
    await chatClient.disconnectUser()    //disconnect admin
     setIsLoading(true);
     //navigation.navigate("Interest_Home_Page", {groupId: GROUPID});  //update screen
@@ -274,7 +282,7 @@ export default function InterestHomePage({route, navigation}){
   const Calendar_Chat_Buttons = () => {
     return(
         <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between', width:'90%', aspectRatio:3, alignSelf:'center'}}>
-          <TouchableOpacity style = {{flex:1}}  onPress={() => navigation.navigate('groupChat')} disabled={!inGroup}>
+          <TouchableOpacity style = {{flex:1}}  onPress={() => navigation.navigate('Group_Chat',{groupId: GROUPID})} disabled={!inGroup}>
             <Surface
                 elevation={20}
                 category="medium"

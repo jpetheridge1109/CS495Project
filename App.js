@@ -24,16 +24,15 @@ const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-const filters = {
+let filters = {
   members: {
-    '$in': [chatUserId]
+    '$in': [global.userID]
   },
 };
 
 const sort = {
   last_message_at: -1,
 };
-
 
 const ChannelScreen = props => {
   const { channel } = useAppContext();
@@ -50,7 +49,11 @@ const ChannelListScreen = props => {
   const { setChannel } = useAppContext();
   return (
       <ChannelList
-          filters={filters}
+          filters={{
+            members: {
+              '$in': [global.userID]
+            }
+          }}
           sort = {sort}
           onSelect={(channel) => {
             const { navigation } = props;
