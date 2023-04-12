@@ -17,6 +17,7 @@ import {AppProvider, useAppContext} from "./AppContext";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId } from './chatConfig';
+import { UserProvider } from './context/UserProvider.js';
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
@@ -80,6 +81,7 @@ const NavigationStack = () => {
 
 export default () => {
   return (
+      <UserProvider>
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
@@ -156,6 +158,7 @@ export default () => {
         </NavigationContainer>
       </SafeAreaView>
       </AppProvider>
+      </UserProvider>
 
   );
 };
