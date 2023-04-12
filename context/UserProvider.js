@@ -6,10 +6,17 @@ const UserContext = createContext();
 const UserProvider = ({ children }) => {
 
     const UserReducer = (state, action) => {
-        return state;
+        switch (action.type) {
+            case 'ADD_USER':
+                return [...state, action.payload];
+            case 'EDIT_USER':
+                return action.payload;
+            default:
+                return state;
+        }
     }
 
-    const [state, dispatch] = useReducer(UserReducer, { user: [{ username: "null", userID: "null" }] });
+    const [state, dispatch] = useReducer(UserReducer, { username: "null", userID: "null" } ); //DEFAULT VALUE FOR USER INFO IN CONTEXT
 
 
     return (
