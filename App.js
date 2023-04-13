@@ -83,13 +83,21 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page" >
-            <Drawer.Screen name="Login Page" component={LoginPage} 
+        <Drawer.Navigator initialRouteName="Login Page">
+            <Drawer.Screen name="Login Page" component={LoginPage}
               options={{
                 drawerItemStyle: { height: 0 },
-                headerTransparent: true,
-                headerTitle:''
-              }}/>
+                headerTransparent: false,
+                headerTitle: 'hi',
+                headerShown: false,
+                drawerLockMode: 'locked-closed',
+                swipeEnabled: false
+              }}
+              screenOptions={{
+                headerBackButton: "disabled",
+                swipeEdgeWidth: 0,
+                gestureEnabled: false
+              }} />
 
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
               options={{
