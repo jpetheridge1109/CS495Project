@@ -139,26 +139,9 @@ export default function ProfileOther({route, navigation}){
 
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>Interests:</Text>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Mountain Biking</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Music</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Photography</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Video Games</Text>
-              </TouchableOpacity>
+              {
+                interests.map((item) => <Item item={item} key={item._id}/>)
+              }
 
             </View>
           </ScrollView>

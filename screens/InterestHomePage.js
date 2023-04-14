@@ -47,6 +47,7 @@ export default function InterestHomePage({route, navigation}){
   const [eventLocation, setEventLocation] = useState("");
   const [eventOrganizer, setEventOrganizer] = useState("");
   const [eventID, setEventID] = useState("");
+  const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
 
   const getMemberPreviewInfo = async (membersArray) => {
     let response;
@@ -132,8 +133,9 @@ export default function InterestHomePage({route, navigation}){
         inGroup = false;
       }
 
-      if(memberNames.length === 0){               //don't update this if we already have the data for modal purposes
+      if(!isPreviewLoaded){               //don't update this if we already have the data for modal purposes
         await getMemberPreviewInfo(memberIDs);
+        setIsPreviewLoaded(true);
       }
       await getUpcomingEventInfo(groupId);
 

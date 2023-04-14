@@ -90,7 +90,7 @@ export default function Profile({navigation}){
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>Interests:</Text>
               {
-                interests.map((item) => <Item item={item}/>)
+                interests.map((item) => <Item item={item} key={item._id}/>)
               }
             </View>
           </ScrollView>
