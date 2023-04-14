@@ -9,6 +9,7 @@ import Start from "./modals/Event";
 import Profile from './screens/Profile'
 import ProfileEditor from "./screens/ProfileEditor";
 import ProfileOther from "./screens/ProfileOther";
+import GroupChat from "./screens/GroupChat";
 const Stack = createNativeStackNavigator();
 
 export default function GroupFind (){
@@ -31,6 +32,12 @@ export default function GroupFind (){
                 name="Members_Page"
                 component={MemberList}
                 options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
+
+            <Stack.Screen
+                name="Group_Chat"
+                component={GroupChat}
+                options = {{ headerTransparent: true, headerBackTitleVisible:false,headerTitle:''}} />
+
             <Stack.Screen
                 name="RSVP_List"
                 component={RSVPList}
