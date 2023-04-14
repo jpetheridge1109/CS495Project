@@ -1,5 +1,14 @@
 import React, {useContext, useState} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Image
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
@@ -58,6 +67,7 @@ function LoginHome() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
+        <Image source={require('./assets/Logo.jpg')}style={styles.logo}></Image>
         <Text style={styles.heading}>Login</Text>
         <TextInput
           style={styles.input}
@@ -131,4 +141,8 @@ const styles = StyleSheet.create({
     color: 'blue',
     textDecorationLine: 'underline',
   },
+  logo:{
+    marginBottom:20,
+    borderRadius:10000
+  }
 });
