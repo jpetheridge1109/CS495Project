@@ -10,24 +10,15 @@ import {
   ScrollView,
   ImageBackground,
   ActivityIndicator,
-  FlatList, Alert, Pressable, Modal
+  Alert, Pressable, Modal
 } from 'react-native';
 
 import { Surface } from "@react-native-material/core";
 import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {findOne, aggregation, find, updateOne} from '../db.js'
-import Event from "../modals/Event";
 import {StreamChat} from "stream-chat";
 import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
-import {
-  Channel,
-  Chat,
-  MessageInput,
-  MessageList,
-  OverlayProvider
-} from "stream-chat-expo";
-import {useAppContext} from "../AppContext";
 
 let image = "placeholder";
 let groupName = "";
@@ -73,7 +64,6 @@ export default function InterestHomePage({route, navigation}){
     else if (memberNames.length == 2 && memberImages.length == 2){
       memberImages[2] = "placeholder";
     }
-    console.log(membersArray.length);
   }
 
   const getUpcomingEventInfo = async (groupId) => {
@@ -98,7 +88,6 @@ export default function InterestHomePage({route, navigation}){
       }
     ]);
     let upcomingEvents = response.documents
-    console.log(upcomingEvents);
 
     eventNames.length = 0;
     eventDates.length = 0;
@@ -121,15 +110,12 @@ export default function InterestHomePage({route, navigation}){
 
     if(eventDates.length > 0){
       setNumEvents(eventDates.length);
-      //this.setState({numEvents:eventDates.length})
     }
   }
 
   useEffect(() => {
     (async () => {
-      console.log("hello")
       const groupId = route.params.groupId
-      console.log(groupId)
       GROUPID = groupId;
       const response = await findOne("group", {"_id": {"$oid":groupId}});
       image = response.document.img;
@@ -145,10 +131,12 @@ export default function InterestHomePage({route, navigation}){
       else{
         inGroup = false;
       }
-      await getMemberPreviewInfo(memberIDs);
-      await getUpcomingEventInfo(groupId); //fixme is console.log(the only thing pausing here
 
-      //this.setState({isLoading: false});  //update screen after data retrieval
+      if(memberNames.length === 0){               //don't update this if we already have the data for modal purposes
+        await getMemberPreviewInfo(memberIDs);
+      }
+      await getUpcomingEventInfo(groupId);
+
       setIsLoading(false) //update screen after data retrieval
     })();
   });
@@ -163,9 +151,6 @@ export default function InterestHomePage({route, navigation}){
     //add user to group in db
     await updateOne('group', {"_id": {"$oid":GROUPID}}, {"$push": {"members": {"$oid": global.userID}}})
     await updateOne('user', {"_id": {"$oid":global.userID}}, {"$push": {"groups": {"$oid": GROUPID}}})
-
-    //let response2 = await findOne("group", {"_id": {"$oid":GROUPID}, "members": {"$oid": global.userID}}) //check if the user is the member of the group already
-   //inGroup = true;  //fixme do we need to actually check we were put in the group
 
     //add user to chat
     const chatClient = StreamChat.getInstance(chatApiKey);
@@ -189,7 +174,6 @@ export default function InterestHomePage({route, navigation}){
     const channels = await chatClient.queryChannels(filter);
     let channel;
     if (channels.length === 0){ //create new channel if doesn't exist
-      console.log(groupName);
       channel = chatClient.channel('messaging',GROUPID,{name: groupName, members:['admin']})    //always add admin to every new group
       await channel.create();
     }
@@ -197,11 +181,9 @@ export default function InterestHomePage({route, navigation}){
       channel = chatClient.channel('messaging',GROUPID);
     }
 
-    console.log("channel: " + channel);
     await channel.addMembers([global.userID], {text: global.userName + ' joined the channel'})    //add member to the channel
    await chatClient.disconnectUser()    //disconnect admin
     setIsLoading(true);
-    //navigation.navigate("Interest_Home_Page", {groupId: GROUPID});  //update screen
   }
 
   const createTwoButtonAlert = () =>
@@ -218,7 +200,6 @@ export default function InterestHomePage({route, navigation}){
       ]);
 
   const EventModal = () => {
-    //fixme people reloading on modal popup
     return(<Modal
         animationType = "fade"
         transparent = {true}
@@ -401,13 +382,13 @@ export default function InterestHomePage({route, navigation}){
                 <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
                 <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
                   <TouchableOpacity style = {{flex:1}} onPress={() => {
-                    setModalVisible(!modalVisible)
                     setEventName(eventNames[0])
                     setEventDate(eventDates[0]);
                     setEventTime(eventTimes[0])
                     setEventLocation(eventLocations[0])
                     setEventOrganizer(eventOrganizers[0])
                     setEventID(eventIDs[0])
+                    setModalVisible(!modalVisible)
                   }
                   }>
                     <Surface
@@ -441,6 +422,12 @@ export default function InterestHomePage({route, navigation}){
               <Text style={{textAlign: 'center', paddingTop: '1%', paddingBottom:'1%', fontWeight:'bold', fontSize: RFPercentage(2)}}>Upcoming Events</Text>
               <View style={{flex: 1, flexDirection: "row", justifyContent:'space-between'}}>
                 <TouchableOpacity style = {{flex:1}} onPress={() => {
+                  setEventName(eventNames[0])
+                  setEventDate(eventDates[0]);
+                  setEventTime(eventTimes[0])
+                  setEventLocation(eventLocations[0])
+                  setEventOrganizer(eventOrganizers[0])
+                  setEventID(eventIDs[0])
                   setModalVisible(!modalVisible)
                 }
                 }>
@@ -454,13 +441,13 @@ export default function InterestHomePage({route, navigation}){
                   </Surface>
                 </TouchableOpacity>
                 <TouchableOpacity style = {{flex:1}} onPress={() => {
-                  setModalVisible(!modalVisible)
                   setEventName(eventNames[1])
                   setEventDate(eventDates[1]);
                   setEventTime(eventTimes[1])
                   setEventLocation(eventLocations[1])
                   setEventOrganizer(eventOrganizers[1])
-                  setEventID(eventIDs[0])
+                  setEventID(eventIDs[1])
+                  setModalVisible(!modalVisible)
                 }
                 }>
                   <Surface
