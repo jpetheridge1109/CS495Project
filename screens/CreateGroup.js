@@ -70,7 +70,7 @@ export default function CreateGroup() {
             onPress={pickImage}
             >
             {image ? (
-                <Image style={styles.image} source={{ uri: image.uri }} />
+                <Image style={styles.image} source={{ uri: image }} />
             ) : (
                 <Text style={styles.imageUploadText}>Choose an image</Text>
             )}
