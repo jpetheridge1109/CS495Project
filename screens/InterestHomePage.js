@@ -188,11 +188,44 @@ export default function InterestHomePage({route, navigation}){
     setIsLoading(true);
   }
 
+  const showRSVPSuccessAlert = () =>
+    Alert.alert(
+      'RSVP Result',
+      'You have successfully RSVP\'ed to this event',
+      [
+        {
+          text: 'OK'
+        },
+      ],
+    );
+  
+    const showRSVPFailureAlert = () =>
+    Alert.alert(
+      'RSVP Result',
+      'Your request to RSVP has failed. Please try again.',
+      [
+        {
+          text: 'OK'
+        },
+      ]
+    );
+
+  const onRSVP = async () => {
+    //updateOne takes (collection, filter, update)
+    //await updateOne('user', { "_id": { "$oid": global.userID } }, { "$push": { "events": { "$oid": eventID } } });
+    await updateOne('user', { "_id": {"$oid": global.userID} }, { "$push": { "events": { "$oid": eventID } } });
+
+    //await updateOne('event', {"_id": {"$oid": eventID}}, {"$push": {"RSVPs": {$oid : global.userID}}});
+    await updateOne('event', { "_id": { "$oid": eventID } }, { "$push": { "RSVPs": { "$oid": global.userID } } });
+    //let rsvpResult = await findOne('user', {"_id": { "$oid": global.userID, "event" : eventID}})
+    showRSVPSuccessAlert();
+  };
+
   const createTwoButtonAlert = () =>
       Alert.alert('RSVP Confirm', 'Would you like to RSVP to this event?', [
         {
           text: 'Yes',
-          //onPress: () => confirmRSVP
+          onPress: () => onRSVP(),
         },
         {
           text: 'No',
