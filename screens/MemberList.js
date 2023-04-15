@@ -29,7 +29,6 @@ export default function MemberList({route, navigation}){
   }
 
   useEffect( () => {
-
     (async () => {
       const groupId = route.params.groupId
       let response = await findOne("group", {"_id": {"$oid":groupId}});
@@ -55,7 +54,7 @@ export default function MemberList({route, navigation}){
           <FlatList
               data={DATA}
               renderItem={({item}) => <Item item={item}/>}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item._id}
           />
         </SafeAreaView>
     )

@@ -80,11 +80,6 @@ export default function Profile({navigation}){
               <Text style={styles.bodyFont}>Age: {age}</Text>
               <Text style={styles.bodyFont}>Grade: {grade}</Text>
               <Text style={styles.bodyFontBottom}>Major: {major}</Text>
-              <TouchableOpacity style={styles.dmBox}>
-                <Image source={require('../assets/mail-icon.png')}
-                       style={styles.dmPic}></Image>
-                <Text style={styles.dmFont}>Direct Message</Text>
-              </TouchableOpacity>
             </View>
 
             <View style={styles.infoBackground}>
@@ -95,7 +90,7 @@ export default function Profile({navigation}){
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>Interests:</Text>
               {
-                interests.map((item) => <Item item={item}/>)
+                interests.map((item) => <Item item={item} key={item._id}/>)
               }
             </View>
           </ScrollView>

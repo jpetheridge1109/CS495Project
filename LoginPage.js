@@ -1,5 +1,14 @@
 import React, {useContext, useState} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Image
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
@@ -7,6 +16,8 @@ import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 import {findOne, insertOne} from "./db";
 import {AppContext} from "./AppContext";
+import {chatApiKey, chatUserId, chatUserName} from "./chatConfig";
+import {StreamChat} from "stream-chat";
 
 const Stack = createStackNavigator();
 
@@ -38,6 +49,7 @@ function LoginHome() {
       //const {userID, setUserID} = useContext(AppContext)
       const user = response.document._id;
       global.userID = user;
+      global.userName = response.document.fname + " " + response.document.lname;
       console.log("User " + user + " successfully logged in")
       navigation.navigate('Find a Group', {user:user});
     }
@@ -57,6 +69,7 @@ function LoginHome() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
+        <Image source={require('./assets/Logo.jpg')}style={styles.logo}></Image>
         <Text style={styles.heading}>Login</Text>
         <TextInput
           style={styles.input}
@@ -137,4 +150,8 @@ const styles = StyleSheet.create({
     color: 'red',
     marginTop: 30,
   },
+  logo:{
+    marginBottom:20,
+    borderRadius:10000
+  }
 });
