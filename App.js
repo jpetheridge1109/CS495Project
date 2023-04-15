@@ -17,6 +17,7 @@ import {AppProvider, useAppContext} from "./AppContext";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId } from './chatConfig';
+import CreateGroup from './screens/CreateGroup.js';
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
@@ -122,6 +123,14 @@ export default () => {
                   source={require('./assets/magnifying.png')}
                 />
                 }}/>
+            <Drawer.Screen name="Create a Group" component={CreateGroup}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/addGroup.png')}
+                  />
+                  }} />
             <Drawer.Screen name="Chat" component={NavigationStack}
                 options={{
                   unmountOnBlur:true,

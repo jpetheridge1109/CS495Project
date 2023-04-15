@@ -35,12 +35,14 @@ export default function LoginPage() {
 function LoginHome() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(false); // added state variable
   const navigation = useNavigation();
 
   const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
     const response = await findOne('user',{"email": email.toLowerCase(), "password": password})
     if(response.document == null){
+      setLoginError(true); // show the error message
       console.log("Invalid username or password");
     }
     else{
@@ -85,6 +87,9 @@ function LoginHome() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        {loginError && ( // show the error message if loginError is true
+          <Text style={styles.errorText}>Incorrect Username or Password, Please Try Again!</Text>
+        )}
         <View style={styles.signupTextContainer}>
           <Text style={styles.signupText}>Don't have an account? </Text>
           <TouchableOpacity onPress={handleSignIn}>
@@ -140,6 +145,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'blue',
     textDecorationLine: 'underline',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 30,
   },
   logo:{
     marginBottom:20,
