@@ -18,6 +18,7 @@ import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId } from './chatConfig';
 import { UserProvider } from './context/UserProvider.js';
+import CreateGroup from './screens/CreateGroup.js';
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
@@ -25,16 +26,15 @@ const Stack = createStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-const filters = {
+let filters = {
   members: {
-    '$in': [chatUserId]
+    '$in': [global.userID]
   },
 };
 
 const sort = {
   last_message_at: -1,
 };
-
 
 const ChannelScreen = props => {
   const { channel } = useAppContext();
@@ -51,6 +51,12 @@ const ChannelListScreen = props => {
   const { setChannel } = useAppContext();
   return (
       <ChannelList
+          filters={{
+            members: {
+              '$in': [global.userID]
+            }
+          }}
+          sort = {sort}
           onSelect={(channel) => {
             const { navigation } = props;
             setChannel(channel);
@@ -63,10 +69,6 @@ const ChannelListScreen = props => {
 
 const NavigationStack = () => {
   const { clientIsReady } = useChatClient();
-
-  if (!clientIsReady) {
-    return <Text>Loading chat ...</Text>
-  }
   return (
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -85,13 +87,22 @@ export default () => {
       <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-        <Drawer.Navigator initialRouteName="Login Page" >
+        <Drawer.Navigator initialRouteName="Login Page">
+
             <Drawer.Screen name="Login Page" component={LoginPage} 
               options={{
                 drawerItemStyle: { height: 0 },
-                headerTransparent: true,
-                headerTitle:''
-              }}/>
+                headerTransparent: false,
+                headerTitle: 'hi',
+                headerShown: false,
+                drawerLockMode: 'locked-closed',
+                swipeEnabled: false
+              }}
+              screenOptions={{
+                headerBackButton: "disabled",
+                swipeEdgeWidth: 0,
+                gestureEnabled: false
+              }} />
 
             <Drawer.Screen name="Frisbee Group" component={GroupFind}
               options={{
@@ -114,8 +125,17 @@ export default () => {
                   source={require('./assets/magnifying.png')}
                 />
                 }}/>
+            <Drawer.Screen name="Create a Group" component={CreateGroup}
+                options={{
+                  drawerIcon: () => 
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require('./assets/addGroup.png')}
+                  />
+                  }} />
             <Drawer.Screen name="Chat" component={NavigationStack}
                 options={{
+                  unmountOnBlur:true,
                   drawerIcon: () => 
                   <Image
                     style={{ width: 50, height: 50 }}

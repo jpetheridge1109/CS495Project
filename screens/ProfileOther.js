@@ -8,11 +8,15 @@ import {
   View
 } from "react-native";
 import {StatusBar} from "expo-status-bar";
+import {StreamChat} from "stream-chat";
+import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
 
 /* NEXT STEPS:
 -Add settings button to top bar
 -Fix shadows
 */
+let fname = "";
+let name2 = "";
 let name = "";
 let age = "";
 let grade = "";
@@ -21,6 +25,7 @@ let aboutMe = "";
 let interestIds = [];
 let profilePic = "placeholder"
 let interests = []
+let MEMBERID;
 
 
 export default function ProfileOther({route, navigation}){
@@ -40,9 +45,11 @@ export default function ProfileOther({route, navigation}){
   useEffect(() => {
     (async () => {
       const memberId = route.params.memberId;
+      MEMBERID = memberId;
       let response = await findOne("user", {"_id": {"$oid":memberId}});
       interestIds.length = 0;
 
+      fname = response.document.fname
       name = response.document.fname +" "+ response.document.lname;
       age = response.document.age
       grade = response.document.class
@@ -54,6 +61,50 @@ export default function ProfileOther({route, navigation}){
       setIsLoading(false)
     })();
   });
+
+  const onDirectMessage = async () => {
+    const filter = { type: 'messaging', members: { $in: [global.userID,MEMBERID] }, member_count: 3 };
+    //add user to chat
+    const chatClient = StreamChat.getInstance(chatApiKey);
+    const user = {
+      id: 'admin',
+      name: 'admin',
+    };
+
+    console.log("user id: " + chatClient.userID);
+    if(chatClient.userID === undefined){
+      await chatClient.connectUser(user, chatClient.devToken('admin')); //login admin if no one logged in
+      console.log("user connected")
+    }
+    await chatClient.disconnectUser()
+    console.log("user disconnected")  //disconnect current user
+
+    await chatClient.connectUser(user, chatClient.devToken('admin')); //login admin
+    console.log("user connected")
+
+    const channels = await chatClient.queryChannels(filter);
+    let channel;
+    if (channels.length === 0){ //create new channel if doesn't exist
+      console.log("Channel not found")
+      let response = await findOne("user", {"_id": {"$oid":global.userID}});
+      let fname2 = response.document.fname
+      name2 = response.document.fname + " " + response.document.lname
+      let g_name = fname + " and " + fname2;
+      console.log(g_name);
+      channel = chatClient.channel('messaging',global.userID+MEMBERID,{name: g_name, members:['admin']})    //always add admin to every new group
+      await channel.create();
+    }
+    else{
+      console.log("Channel found")
+      channel = channels[0];
+    }
+
+    console.log("channel: " + channel);
+    await channel.addMembers([global.userID], {text: global.userName + ' joined the channel'})    //add member to the channel
+    await channel.addMembers([MEMBERID], {text: name + ' joined the channel'})    //add member to the channel
+    await chatClient.disconnectUser()    //disconnect admin
+    navigation.navigate('Group_Chat',{groupId: channel.id})
+  }
 
   const RenderedObject = () => {
     if (isLoading) {
@@ -73,7 +124,13 @@ export default function ProfileOther({route, navigation}){
               <Text style={styles.bodyFont}>Age: {age}</Text>
               <Text style={styles.bodyFont}>Grade: {grade}</Text>
               <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+              <TouchableOpacity style={styles.dmBox} onPress={() => onDirectMessage()}>
+                <Image source={require('../assets/mail-icon.png')}
+                       style={styles.dmPic}></Image>
+                <Text style={styles.dmFont}>Direct Message</Text>
+              </TouchableOpacity>
             </View>
+
 
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>About Me:</Text>
@@ -82,26 +139,9 @@ export default function ProfileOther({route, navigation}){
 
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>Interests:</Text>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Mountain Biking</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Music</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Photography</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.interestBox}>
-                <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
-                <Text style={styles.interestFont}>Video Games</Text>
-              </TouchableOpacity>
+              {
+                interests.map((item) => <Item item={item} key={item._id}/>)
+              }
 
             </View>
           </ScrollView>

@@ -1,5 +1,14 @@
 import React, {useContext, useState} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Image
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
@@ -7,6 +16,9 @@ import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 import {findOne, insertOne} from "./db";
 import {AppContext} from "./AppContext";
+import {chatApiKey, chatUserId, chatUserName} from "./chatConfig";
+import { StreamChat } from "stream-chat";
+import { UserContext } from "./context/UserProvider"
 
 const Stack = createStackNavigator();
 
@@ -24,20 +36,25 @@ export default function LoginPage() {
 function LoginHome() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(false); // added state variable
   const navigation = useNavigation();
 
   const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
     const response = await findOne('user',{"email": email.toLowerCase(), "password": password})
     if(response.document == null){
+      setLoginError(true); // show the error message
       console.log("Invalid username or password");
     }
     else{
       //const {userID, setUserID} = useContext(AppContext)
+      const { dispatch } = useContext(UserContext);
       const user = response.document._id;
       global.userID = user;
+      global.userName = response.document.fname + " " + response.document.lname;
       console.log("User " + user + " successfully logged in")
-      navigation.navigate('Find a Group', {user:user});
+      dispatch({ type: 'EDIT_USER', payload: { username: response.document.fname + " " + response.document.lname, userID: response.document._id}})
+      navigation.navigate('Find a Group', { user: user });
     }
     // let object =
     //     {
@@ -55,6 +72,7 @@ function LoginHome() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
+        <Image source={require('./assets/Logo.jpg')}style={styles.logo}></Image>
         <Text style={styles.heading}>Login</Text>
         <TextInput
           style={styles.input}
@@ -72,6 +90,9 @@ function LoginHome() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        {loginError && ( // show the error message if loginError is true
+          <Text style={styles.errorText}>Incorrect Username or Password, Please Try Again!</Text>
+        )}
         <View style={styles.signupTextContainer}>
           <Text style={styles.signupText}>Don't have an account? </Text>
           <TouchableOpacity onPress={handleSignIn}>
@@ -128,4 +149,12 @@ const styles = StyleSheet.create({
     color: 'blue',
     textDecorationLine: 'underline',
   },
+  errorText: {
+    color: 'red',
+    marginTop: 30,
+  },
+  logo:{
+    marginBottom:20,
+    borderRadius:10000
+  }
 });

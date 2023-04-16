@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, Image, ScrollView, TouchableOpacity} from 'react-native';
+import React from "react";
 
 let firstName = 'First';
 let lastName = 'Last';
@@ -7,6 +8,7 @@ let age = 0;
 let grade = 'Grade'
 let major = 'Major';
 let aboutMe = 'n/a';
+let interests = []
 
 export default function ProfileEditor() {
   return (
@@ -27,28 +29,6 @@ export default function ProfileEditor() {
         </View>
 
         <View style={styles.infoBackground}>
-          <Text style={styles.nameFont}>Interests:</Text>
-
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/bike.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Mountain Biking</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/musical-note.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Music</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/camera.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Photography</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.interestBox}>
-            <Image source={require('../assets/game-console.png')} style={styles.interestPic}></Image>
-            <Text style={styles.interestFont}>Video Games</Text>
-          </TouchableOpacity>
-
         </View>
       </ScrollView>
       <StatusBar style='auto'/>
