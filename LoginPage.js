@@ -38,6 +38,7 @@ function LoginHome() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false); // added state variable
   const navigation = useNavigation();
+  const { dispatch } = useContext(UserContext);
 
   const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
@@ -48,7 +49,6 @@ function LoginHome() {
     }
     else{
       //const {userID, setUserID} = useContext(AppContext)
-      const { dispatch } = useContext(UserContext);
       const user = response.document._id;
       global.userID = user;
       global.userName = response.document.fname + " " + response.document.lname;
