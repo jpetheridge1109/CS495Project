@@ -17,7 +17,8 @@ import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
 import {findOne, insertOne} from "./db";
 import {AppContext} from "./AppContext";
 import {chatApiKey, chatUserId, chatUserName} from "./chatConfig";
-import {StreamChat} from "stream-chat";
+import { StreamChat } from "stream-chat";
+import { UserContext } from "./context/UserProvider"
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ function LoginHome() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false); // added state variable
   const navigation = useNavigation();
+  const { dispatch } = useContext(UserContext);
 
   const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
@@ -51,7 +53,8 @@ function LoginHome() {
       global.userID = user;
       global.userName = response.document.fname + " " + response.document.lname;
       console.log("User " + user + " successfully logged in")
-      navigation.navigate('Find a Group', {user:user});
+      dispatch({ type: 'EDIT_USER', payload: { username: response.document.fname + " " + response.document.lname, userID: response.document._id}})
+      navigation.navigate('Find a Group', { user: user });
     }
     // let object =
     //     {
