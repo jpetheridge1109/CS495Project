@@ -9,19 +9,17 @@ import {
   TouchableWithoutFeedback,
   Image
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {StackActions, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfSetName from './screens/ProfSet_Name.js'
 import ProfSetDetails from './screens/ProfSet_Details.js'
 import ProfSetAboutMe from './screens/ProfSet_AboutMe.js'
-import {findOne, insertOne} from "./db";
-import {AppContext} from "./AppContext";
-import {chatApiKey, chatUserId, chatUserName} from "./chatConfig";
-import { StreamChat } from "stream-chat";
+import {findOne} from "./db";
 import { UserContext } from "./context/UserProvider"
 
 const Stack = createStackNavigator();
 
+let interests = [];
 export default function LoginPage() {
   return (
       <Stack.Navigator initialRouteName="Login">
@@ -40,6 +38,16 @@ function LoginHome() {
   const navigation = useNavigation();
   const { dispatch } = useContext(UserContext);
 
+
+  const getInterestInfo = async (interestIds) => {
+    let response;
+    interests.length = 0
+    for(let i = 0; i < interestIds.length; i++){
+      response = await findOne("group", {"_id": {"$oid":interestIds[i]}});
+      interests.push(response.document)
+    }
+  }
+
   const handleLogin = async () => {
     // After the login is successful, navigate to the home screen.
     const response = await findOne('user',{"email": email.toLowerCase(), "password": password})
@@ -48,21 +56,24 @@ function LoginHome() {
       console.log("Invalid username or password");
     }
     else{
-      //const {userID, setUserID} = useContext(AppContext)
       const user = response.document._id;
       global.userID = user;
       global.userName = response.document.fname + " " + response.document.lname;
       console.log("User " + user + " successfully logged in")
-      dispatch({ type: 'EDIT_USER', payload: { username: response.document.fname + " " + response.document.lname, userID: response.document._id}})
+      await getInterestInfo(response.document.groups)
+      dispatch({ type: 'EDIT_USER', payload: {
+        username: response.document.fname + " " + response.document.lname,
+        age:response.document.age,
+        grade: response.document.class,
+        major: response.document.major,
+        aboutMe: response.document.bio,
+        interestIds: response.document.groups,
+        profilePic: response.document.img,
+        interests:interests,
+        userID: response.document._id},
+      })
       navigation.navigate('Find a Group', { user: user });
     }
-    // let object =
-    //     {
-    //       "name": "John Sample",
-    //       "age": 42
-    //     }
-    // const insertResponse = await insertOne('user_test', object);
-    // console.log(insertResponse);
   };
 
   const handleSignIn = () => {

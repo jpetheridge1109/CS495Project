@@ -1,8 +1,8 @@
 // Displays the main Settings page
 
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert} from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack'
 import About from './About';
 import Notifications from './Notifications';
 import BlockedContacts from './BlockedContacts';
@@ -50,9 +50,10 @@ function Settings({ navigation }) {
   const handleLogOutConfirmation = (confirmed) => {
     setIsLogOutConfirmationVisible(false);
     if (confirmed) {
-      navigation.navigate("Login Page");
+
       console.log("User " + global.userID + " successfully logged out")
       global.userID = "";
+      navigation.navigate("Login Page");
     }
   };
 

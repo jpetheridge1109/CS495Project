@@ -17,8 +17,9 @@ import {AppProvider, useAppContext} from "./AppContext";
 import {ChannelList, Chat, OverlayProvider, Channel,  MessageList,  MessageInput} from 'stream-chat-expo'; // Or stream-chat-expo
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId } from './chatConfig';
-import { UserProvider } from './context/UserProvider.js';
+import {UserContext, UserProvider} from './context/UserProvider.js';
 import CreateGroup from './screens/CreateGroup.js';
+import {useContext} from "react";
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
@@ -49,11 +50,12 @@ const ChannelScreen = props => {
 
 const ChannelListScreen = props => {
   const { setChannel } = useAppContext();
+  const {state} = useContext(UserContext)
   return (
       <ChannelList
           filters={{
             members: {
-              '$in': [global.userID]
+              '$in': [state.userID]
             }
           }}
           sort = {sort}

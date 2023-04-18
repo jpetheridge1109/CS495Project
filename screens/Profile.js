@@ -9,7 +9,8 @@ import {
   SafeAreaView, ActivityIndicator, FlatList
 } from 'react-native';
 import {find, findOne} from "../db";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
+import {UserContext} from "../context/UserProvider";
 
 /* NEXT STEPS:
 -Add settings button to top bar
@@ -26,7 +27,18 @@ let interests = []
 
 export default function Profile({navigation}){
   const [isLoading, setIsLoading] = useState(true);
-  const [userID, setUserId] = useState(global.userID);
+  const [name, setName] = useState("");
+  // const [age, setAge] = useState("");
+  // const [grade, setGrade] = useState("");
+  // const [major, setMajor] = useState("");
+  // const [aboutMe, setAboutMe] = useState("");
+  // const [profilePic, setProfilePic] = useState("place");
+  // const [interestIds, seInterestIds] = useState([]);
+  // const [interests, setInterests] = useState([]);
+  const {state} = useContext(UserContext)
+  // const [userID, setUserID] = useState(state.userID)
+
+
 
   const getInterestInfo = async (interestIds) => {
     let response;
@@ -38,19 +50,10 @@ export default function Profile({navigation}){
   }
 
   useEffect(() => {
-    setUserId(global.userID)
+    console.log("updating...")
     let response;
     (async () => {
-      response = await findOne("user", {"_id": {"$oid":userID}});
-      interestIds.length = 0;
-
-      name = response.document.fname +" "+ response.document.lname;
-      age = response.document.age
-      grade = response.document.class
-      major = response.document.major
-      aboutMe = response.document.bio
-      interestIds = response.document.groups
-      profilePic = response.document.img
+      response = await findOne("user", {"_id": {"$oid":state.userID}});
       await getInterestInfo(interestIds);
       setIsLoading(false)
     })();
@@ -72,25 +75,25 @@ export default function Profile({navigation}){
               <Image source={require('../assets/profile_edit_icon.jpg')} style={styles.editPic}></Image>
               <Text style={styles.dmFont}>Edit Profile</Text>
             </TouchableOpacity>
-            <Image source={{uri:profilePic}}
+            <Image source={{uri:state.profilePic}}
                    style={styles.profPic}></Image>
 
             <View style={styles.infoBackground}>
-              <Text style={styles.nameFont}>{name}</Text>
-              <Text style={styles.bodyFont}>Age: {age}</Text>
-              <Text style={styles.bodyFont}>Grade: {grade}</Text>
-              <Text style={styles.bodyFontBottom}>Major: {major}</Text>
+              <Text style={styles.nameFont}>{state.username}</Text>
+              <Text style={styles.bodyFont}>Age: {state.age}</Text>
+              <Text style={styles.bodyFont}>Grade: {state.grade}</Text>
+              <Text style={styles.bodyFontBottom}>Major: {state.major}</Text>
             </View>
 
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>About Me:</Text>
-              <Text style={styles.bodyFontBottom}>{aboutMe}</Text>
+              <Text style={styles.bodyFontBottom}>{state.aboutMe}</Text>
             </View>
 
             <View style={styles.infoBackground}>
               <Text style={styles.nameFont}>Interests:</Text>
               {
-                interests.map((item) => <Item item={item} key={item._id}/>)
+                state.interests.map((item) => <Item item={item} key={item._id}/>)
               }
             </View>
           </ScrollView>
@@ -98,12 +101,16 @@ export default function Profile({navigation}){
         </View>
     )
   }
-  const Item = ({item}) => (
-      <TouchableOpacity style={styles.interestBox}>
-        <Image source={{uri:item.img}} style={styles.interestPic}></Image>
-        <Text style={styles.interestFont}>{item.name}</Text>
-      </TouchableOpacity>
-  );
+  const Item = ({item}) => {
+    console.log("Hi")
+    //console.log(item)
+    return(
+        <TouchableOpacity style={styles.interestBox}>
+      <Image source={{uri:item.img}} style={styles.interestPic}></Image>
+      <Text style={styles.interestFont}>{item.name}</Text>
+    </TouchableOpacity>
+    )
+  }
   return(
       <RenderedObject/>
   )

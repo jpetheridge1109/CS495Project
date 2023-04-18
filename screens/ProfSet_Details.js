@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-
+import * as FileSystem from 'expo-file-system';
 const grades = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate', 'Doctoral'];
 
 export default function ProfSet_Details({ route }) {
@@ -20,6 +20,7 @@ export default function ProfSet_Details({ route }) {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const handleOptionPress = (option) => {
+    setGrade(option)
     setSelectedOption(option);
     setShowOptions(false);
   };
@@ -56,10 +57,10 @@ export default function ProfSet_Details({ route }) {
 
     if(isValid) {
       navigation.navigate('About Me', {
-        firstName: JSON.stringify(firstName),
-        lastName: JSON.stringify(lastName),
-        email: JSON.stringify(email),
-        password: JSON.stringify(password),
+        firstName,
+        lastName,
+        email,
+        password,
         age,
         grade,
         major,
@@ -80,13 +81,17 @@ export default function ProfSet_Details({ route }) {
       return;
     }
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      quality:0.2
+    });
     
     if (pickerResult.canceled === true) {
       return;
     }
 
-    setImage(pickerResult.assets[0].uri);
+
+    const base64 = await FileSystem.readAsStringAsync(pickerResult.assets[0].uri, { encoding: 'base64' });
+    setImage("data:image/jpeg;base64,"+ base64);
   };
 
   return (

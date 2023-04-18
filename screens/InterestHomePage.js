@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -18,7 +18,8 @@ import { Button } from '@rneui/themed';
 import { RFPercentage } from "react-native-responsive-fontsize";
 import {findOne, aggregation, find, updateOne} from '../db.js'
 import {StreamChat} from "stream-chat";
-import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
+import {chatApiKey} from "../chatConfig";
+import {UserContext} from "../context/UserProvider";
 
 let image = "placeholder";
 let groupName = "";
@@ -48,6 +49,7 @@ export default function InterestHomePage({route, navigation}){
   const [eventOrganizer, setEventOrganizer] = useState("");
   const [eventID, setEventID] = useState("");
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+  const {state} = useContext(UserContext)
 
   const getMemberPreviewInfo = async (membersArray) => {
     let response;
@@ -125,7 +127,7 @@ export default function InterestHomePage({route, navigation}){
       createdDate = response.document.created_date
       memberCount = response.document.members.length
       memberIDs = response.document.members
-      let response2 = await findOne("group", {"_id": {"$oid":GROUPID}, "members": {"$oid": global.userID}}) //check if the user is the member of the group already
+      let response2 = await findOne("group", {"_id": {"$oid":GROUPID}, "members": {"$oid":state.userID}}) //check if the user is the member of the group already
       if(response2.document != null){
         inGroup = true;
       }
@@ -147,12 +149,12 @@ export default function InterestHomePage({route, navigation}){
     setModalVisible(!modalVisible)
     navigation.navigate('RSVP_List',{eventId: eventID})
   };
-  const filter = { type: 'messaging', members: { $in: [global.userID] }, id: GROUPID };
+  const filter = { type: 'messaging', members: { $in: [state.userID] }, id: GROUPID };
 
   const onJoin = async () => {
     //add user to group in db
-    await updateOne('group', {"_id": {"$oid":GROUPID}}, {"$push": {"members": {"$oid": global.userID}}})
-    await updateOne('user', {"_id": {"$oid":global.userID}}, {"$push": {"groups": {"$oid": GROUPID}}})
+    await updateOne('group', {"_id": {"$oid":GROUPID}}, {"$push": {"members": {"$oid": state.userID}}})
+    await updateOne('user', {"_id": {"$oid":state.userID}}, {"$push": {"groups": {"$oid": GROUPID}}})
 
     //add user to chat
     const chatClient = StreamChat.getInstance(chatApiKey);
@@ -183,7 +185,7 @@ export default function InterestHomePage({route, navigation}){
       channel = chatClient.channel('messaging',GROUPID);
     }
 
-    await channel.addMembers([global.userID], {text: global.userName + ' joined the channel'})    //add member to the channel
+    await channel.addMembers([state.userID], {text: state.username + ' joined the channel'})    //add member to the channel
    await chatClient.disconnectUser()    //disconnect admin
     setIsLoading(true);
   }
@@ -213,10 +215,10 @@ export default function InterestHomePage({route, navigation}){
   const onRSVP = async () => {
     //updateOne takes (collection, filter, update)
     //await updateOne('user', { "_id": { "$oid": global.userID } }, { "$push": { "events": { "$oid": eventID } } });
-    await updateOne('user', { "_id": {"$oid": global.userID} }, { "$push": { "events": { "$oid": eventID } } });
+    await updateOne('user', { "_id": {"$oid": state.userID} }, { "$push": { "events": { "$oid": eventID } } });
 
     //await updateOne('event', {"_id": {"$oid": eventID}}, {"$push": {"RSVPs": {$oid : global.userID}}});
-    await updateOne('event', { "_id": { "$oid": eventID } }, { "$push": { "RSVPs": { "$oid": global.userID } } });
+    await updateOne('event', { "_id": { "$oid": eventID } }, { "$push": { "RSVPs": { "$oid": state.userID } } });
     //let rsvpResult = await findOne('user', {"_id": { "$oid": global.userID, "event" : eventID}})
     showRSVPSuccessAlert();
   };

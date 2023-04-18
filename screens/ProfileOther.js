@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {findOne} from "../db";
 import {
   ActivityIndicator, Image,
@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import {StatusBar} from "expo-status-bar";
 import {StreamChat} from "stream-chat";
-import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
+import {chatApiKey} from "../chatConfig";
+import {UserContext} from "../context/UserProvider";
 
 /* NEXT STEPS:
 -Add settings button to top bar
@@ -31,7 +32,7 @@ let MEMBERID;
 export default function ProfileOther({route, navigation}){
 
   const [isLoading, setIsLoading] = useState(true);
-  const [userID, setUserId] = useState(global.userID);
+  const {state} = useContext(UserContext);
 
   const getInterestInfo = async (interestIds) => {
     let response;
@@ -63,7 +64,7 @@ export default function ProfileOther({route, navigation}){
   });
 
   const onDirectMessage = async () => {
-    const filter = { type: 'messaging', members: { $in: [global.userID,MEMBERID] }, member_count: 3 };
+    const filter = { type: 'messaging', members: { $in: [state.userID,MEMBERID] }, member_count: 3 };
     //add user to chat
     const chatClient = StreamChat.getInstance(chatApiKey);
     const user = {

@@ -16,7 +16,16 @@ const UserProvider = ({ children }) => {
         }
     }
 
-    const [state, dispatch] = useReducer(UserReducer, { username: "null", userID: "null" } ); //DEFAULT VALUE FOR USER INFO IN CONTEXT
+    const [state, dispatch] = useReducer(UserReducer, {
+        username: "null",
+        userID: "null",
+        age:"null",
+        grade: "null",
+        major: "null",
+        aboutMe: "null",
+        interestIds: [],
+        profilePic: "placeholder",
+        interests: []} ); //DEFAULT VALUE FOR USER INFO IN CONTEXT
 
 
     return (

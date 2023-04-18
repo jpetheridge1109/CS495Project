@@ -1,24 +1,23 @@
 // useChatClient.js
 
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { StreamChat } from 'stream-chat';
 import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './chatConfig';
+import {UserContext} from "./context/UserProvider";
 
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
 export const useChatClient = () => {
   const [clientIsReady, setClientIsReady] = useState(false);
-
+  const {state} = useContext(UserContext)
   useEffect(() => {
     const setupClient = async () => {
       try {
-        console.log("HI " + global.userID);
-        console.log("HI " + global.userName);
         chatClient.connectUser({
-          id: global.userID,
-          name: global.userName,
-        }, chatClient.devToken(global.userID));
+          id: state.userID,
+          name: state.userName,
+        }, chatClient.devToken(state.userID));
 
 
         setClientIsReady(true);

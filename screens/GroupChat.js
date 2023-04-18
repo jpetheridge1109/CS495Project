@@ -1,9 +1,6 @@
-import React from "react";
-import ProfSetName from "./ProfSet_Name";
-import ProfSetDetails from "./ProfSet_Details";
-import ProfSetAboutMe from "./ProfSet_AboutMe";
+import React, {useContext} from "react";
 import {StreamChat} from "stream-chat";
-import {chatApiKey, chatUserId, chatUserName} from "../chatConfig";
+import {chatApiKey} from "../chatConfig";
 import {
   Channel,
   Chat,
@@ -11,19 +8,18 @@ import {
   MessageList,
   OverlayProvider
 } from "stream-chat-expo";
+import {UserContext, UserProvider} from "../context/UserProvider";
 
 export default function GroupChat({route, navigation}) {
   const groupId = route.params.groupId
   const chatClient = StreamChat.getInstance(chatApiKey);
-  const user = {
-    id: global.user,
-    name: global.userName,
-  };
+  const {state} = useContext(UserContext);
+
   if (!chatClient.userID) {
     chatClient.connectUser({
-      id: global.userID,
-      name: global.userName,
-    }, chatClient.devToken(global.userID));
+      id: state.userID,
+      name: state.username,
+    }, chatClient.devToken(state.userID));
   }
   let channel = chatClient.channel('messaging',groupId);
   return(
