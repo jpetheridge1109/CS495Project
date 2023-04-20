@@ -38,12 +38,13 @@ export default function MemberList (){
     }, 1000);
   };
 
+    
   const renderItem = (item) => {
     return (
       <SafeAreaView>
         <TouchableOpacity>
-          <View>
-            <Text style={{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+          <View style={{backgroundColor: '#e6e6e6', borderRadius: 15, marginVertical: 7}}>
+            <Text style={{width:'80%', aspectRatio:3, alignSelf:'center', fontSize: 18}}>
               {item.name}
             </Text>
           </View>
@@ -51,7 +52,7 @@ export default function MemberList (){
       </SafeAreaView>
     )
   };
-
+  
   return (
     <View style={{ flex: 1 }}>
       <Agenda
