@@ -11,8 +11,6 @@ export default function MemberList (){
     const [items, setItems] = useState({});
   
     const loadItems = (day) => {
-      const items = items || {};
-
       setTimeout(() => {
         for (let i = -15; i < 85; i++) {
           const time = day.timestamp + i * 24 * 60 * 60 * 1000;
@@ -41,11 +39,11 @@ export default function MemberList (){
 
     return (
       <View style={{ flex: 1 }}>
-        <Agenda>
+        <Agenda
           items={items}
           loadItemsForMonth={loadItems}
-          selected={'2017-05-16'}
-        </Agenda>
+          selected={'2023-04-20'}
+        />
       </View>
     )
 }
