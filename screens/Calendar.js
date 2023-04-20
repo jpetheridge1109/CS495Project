@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 
 const timeToString = (time) => {
@@ -8,42 +8,58 @@ const timeToString = (time) => {
 };
 
 export default function MemberList (){
-    const [items, setItems] = useState({});
-  
-    const loadItems = (day) => {
-      setTimeout(() => {
-        for (let i = -15; i < 85; i++) {
-          const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-          const strTime = timeToString(time);
+  const [items, setItems] = useState({});
 
-          if (!items[strTime]) {
-            items[strTime] = [];
-            const numItems = Math.floor(Math.random() * 3 + 1);
-            for (let j = 0; j < numItems; j++) {
-              items[strTime].push({
-                name: 'Item for ' + strTime + ' #' + j,
-                height: Math.max(50, Math.floor(Math.random() * 150)),
-                day: strTime
-              });
-            }
+  const loadItems = (day) => {
+    setTimeout(() => {
+      for (let i = -15; i < 85; i++) {
+        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+        const strTime = timeToString(time);
+
+        if (!items[strTime]) {
+          items[strTime] = [];
+          const numItems = Math.floor(Math.random() * 3 + 1);
+          //creates default items which are events
+          for (let j = 0; j < numItems; j++) {
+            items[strTime].push({
+              name: 'Item for ' + strTime + ' #' + j,
+              height: Math.max(50, Math.floor(Math.random() * 150)),
+              day: strTime
+            });
           }
         }
+      }
 
-        const newItems = {};
-        Object.keys(items).forEach((key) => {
-          newItems[key] = items[key];
-        });
-        setItems(newItems);
-      }, 1000);
-    };
+      const newItems = {};
+      Object.keys(items).forEach((key) => {
+        newItems[key] = items[key];
+      });
+      setItems(newItems);
+    }, 1000);
+  };
 
+  const renderItem = (item) => {
     return (
-      <View style={{ flex: 1 }}>
-        <Agenda
-          items={items}
-          loadItemsForMonth={loadItems}
-          selected={'2023-04-20'}
-        />
-      </View>
+      <SafeAreaView>
+        <TouchableOpacity>
+          <View>
+            <Text style={{width:'80%', aspectRatio:2, alignSelf:'center' }}>
+              {item.name}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </SafeAreaView>
     )
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Agenda
+        items={items}
+        loadItemsForMonth={loadItems}
+        selected={'2023-04-20'}
+        renderItem={renderItem}
+      />
+    </View>
+  )
 }
