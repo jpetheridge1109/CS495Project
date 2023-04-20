@@ -24,9 +24,9 @@ export default function MyGroups({route, navigation}){
   console.log(state.userID);
   useEffect( () => {
     (async () => {
-      let response = await find("group", { "members": { "$in" : {"$oid": state.userID}} });
+      let response = await find("group", { "members": { "$in" : [{"$oid": state.userID}]} });
       DATA = response.documents;
-      setIsLoading(false);      //update screen after data retrieval
+      setIsLoading(false);      //update screen after data retrievalrr
     })();
   });
 
