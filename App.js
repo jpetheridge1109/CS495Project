@@ -20,6 +20,8 @@ import { chatApiKey, chatUserId } from './chatConfig';
 import {UserContext, UserProvider} from './context/UserProvider.js';
 import CreateGroup from './screens/CreateGroup.js';
 import {useContext} from "react";
+import InterestCategory from './screens/InterestCategory.js'; 
+import MyGroups from './screens/MyGroups.js';
 
 const chatClient = StreamChat.getInstance(chatApiKey);
 
@@ -106,16 +108,12 @@ export default () => {
                 gestureEnabled: false
               }} />
 
-            <Drawer.Screen name="Frisbee Group" component={GroupFind}
+              <Drawer.Screen name="My Groups" component={MyGroups}
               options={{
-                drawerLabelStyle: {
-                  color: "blue",
-                  fontWeight: 'bold'
-                }, 
                 drawerIcon: () => 
                 <Image
                   style={{ width: 50, height: 50 }}
-                  source={require('./assets/frisbee.png')}
+                  source={require('./assets/mygroups.png')}
                 />
                 
                 }}/>
