@@ -11,34 +11,43 @@ export default function MemberList (){
   const [items, setItems] = useState({});
 
   const loadItems = (day) => {
-    setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
+    items['2023-04-20'] = [];
+    items['2023-04-20'].push({
+      name: "6:30 PM - Meeting at the Quad.",
+      day: '2023-04-20'
+    });
 
-        if (!items[strTime]) {
-          items[strTime] = [];
-          const numItems = Math.floor(Math.random() * 3 + 1);
-          //creates default items which are events
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: 'Item for ' + strTime + ' #' + j,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-              day: strTime
-            });
-          }
-        }
-      }
+    items['2023-04-21'] = [];
+    items['2023-04-21'].push({
+      name: "5:00 PM - Practice.",
+      day: '2023-04-21'
+    });
 
-      const newItems = {};
-      Object.keys(items).forEach((key) => {
-        newItems[key] = items[key];
-      });
-      setItems(newItems);
-    }, 1000);
+    items['2023-04-21'].push({
+      name: "7:00 PM - After practice game night.",
+      day: '2023-04-21'
+    });
+
+    items['2023-04-30'] = [];
+    items['2023-04-30'].push({
+      name: "4:30 PM - Movie night.",
+      day: '2023-04-30'
+    });
+
+    items['2023-05-05'] = [];
+    items['2023-05-05'].push({
+      name: "6:00 PM - Last game night of the semester.",
+      day: '2023-05-05'
+    });
+    
+    const newItems = {};
+    Object.keys(items).forEach((key) => {
+      newItems[key] = items[key];
+    });
+    setItems(newItems);
   };
 
-    
+  
   const renderItem = (item) => {
     return (
       <SafeAreaView>
@@ -52,6 +61,7 @@ export default function MemberList (){
       </SafeAreaView>
     )
   };
+  
   
   return (
     <View style={{ flex: 1 }}>
